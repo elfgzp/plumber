@@ -15,10 +15,17 @@ func SetDB(database *gorm.DB) {
 }
 
 type BaseModel struct {
-	ID       uint `gorm:"primary_key"`
-	CreateBy User
-	UpdateBy User
-	CreateAt *time.Time
-	UpdateAt *time.Time
-	Slug     string
+	ID         uint `gorm:"primary_key"`
+	CreateAt   *time.Time
+	UpdateAt   *time.Time
+	DeletedAt  *time.Time
+	Slug       string
+}
+
+type Model struct {
+	BaseModel
+	CreateBy   User
+	UpdateBy   User
+	CreateByID int
+	UpdateByID int
 }
