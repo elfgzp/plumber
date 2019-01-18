@@ -23,6 +23,6 @@ type Task struct {
 	Project   Project
 	ProjectID Project
 
-	StaredUsers   []Task `gorm:"many2many:stared_task_user_rel"`
-	NotifiedUsers []User `gorm:"many2many:notified_task_user_rel"`
+	StaredUsers   []Task `gorm:"many2many:stared_task_user_rel;association_jointable_foreignkey:user_id"`
+	NotifiedUsers []User `gorm:"many2many:notified_task_user_rel;association_jointable_foreignkey:user_id"`
 }

@@ -16,7 +16,7 @@ func main() {
 	db := db2.ConnectToDB()
 	defer db.Close()
 	models.SetDB(db)
-
+	db.LogMode(true)
 	db.AutoMigrate(
 		&models.User{},
 		&models.Team{},

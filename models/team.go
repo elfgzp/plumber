@@ -7,5 +7,5 @@ type Team struct {
 	OwnerID int
 	Owner   User
 
-	Members []User `gorm:"many2many:team_user_rel;"`
+	Members []User `gorm:"many2many:team_user_rel;user_id"`
 }
