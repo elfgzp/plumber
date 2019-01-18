@@ -5,3 +5,6 @@ postgresql:
   password: postgres
   db: plumber
   sslmode: disable
+jwt:
+  exp_sec: 604800
+  secret: secret

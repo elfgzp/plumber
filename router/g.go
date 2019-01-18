@@ -1,6 +1,7 @@
 package router
 
 import (
+	"github.com/elfgzp/plumber/controllers/restful"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -15,7 +16,9 @@ type Route struct {
 var routes []Route
 
 func init() {
-
+	register(http.MethodPost, "/api/token", restful.CreateToken, nil)
+	register(http.MethodPost, "/api/token/verification", restful.TokenVerify, nil)
+	//register(http.MethodPost, "/api/users", )
 }
 
 func NewRouter() *mux.Router {
