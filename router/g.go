@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/elfgzp/plumber/controllers/restful"
 	"github.com/elfgzp/plumber/helpers"
+	"github.com/elfgzp/plumber/middleware"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -22,14 +23,19 @@ func init() {
 	register("apiURL", http.MethodGet, "/api", func(w http.ResponseWriter, r *http.Request) {
 		apiURL := make(map[string]string)
 		for _, route := range routers {
-			apiURL[route.Name] = fmt.Sprintf("http://%s%s", r.Host, route.URI)
+			if _, ok := apiURL[route.Name]; !ok {
+				apiURL[route.Name] = fmt.Sprintf("http://%s%s", r.Host, route.URI)
+			}
 		}
 		helpers.ResponseWithJSON(w, http.StatusOK, apiURL)
 	}, nil)
 
 	register("tokenURL", http.MethodPost, "/api/token", restful.CreateTokenHandler, nil)
 	register("tokenVerificationURL", http.MethodPost, "/api/token/verification", restful.TokenVerifyHandler, nil)
-	register("UsersURL", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
+
+	register("usersURL", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
+
+	register("teamsURL", http.MethodPost, "/api/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
 }
 
 func NewRouter() *mux.Router {

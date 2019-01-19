@@ -7,5 +7,5 @@ type TaskState struct {
 	Tasks    []Task
 
 	Project   Project
-	ProjectID int
+	ProjectID uint
 }

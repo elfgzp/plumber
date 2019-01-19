@@ -6,8 +6,8 @@ type TaskCheckPoint struct {
 	Sequence int
 
 	User   User
-	UserID int
+	UserID uint
 
 	Task   Task
-	TaskID int
+	TaskID uint
 }

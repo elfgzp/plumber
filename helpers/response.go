@@ -21,3 +21,4 @@ func ResponseWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 func UnauthorizedResponse() JSONResponse {
 	return JSONResponse{Code: http.StatusUnauthorized, Msg: "Not Authorized"}
 }
+

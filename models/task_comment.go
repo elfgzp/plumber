@@ -5,5 +5,5 @@ type TaskComment struct {
 	Content string
 
 	Task   Task
-	TaskID int
+	TaskID uint
 }

@@ -9,7 +9,7 @@ type User struct {
 	MobileCountryCode string
 	Mobile            string
 	PasswordHash      string    `gorm:"not null"`
-	Team              []Team    `gorm:"many2many:team_user_rel;association_jointable_foreignkey;team_id"`
+	Team              []Team    `gorm:"many2many:team_user_rel;association_jointable_foreignkey:team_id"`
 	Project           []Project `gorm:"many2many:project_user_rel;association_jointable_foreignkey:project_id"`
 	Tasks             []Task
 	StaredTasks       []Task `gorm:"many2many:stared_task_user_rel;association_jointable_foreignkey:task_id"`
@@ -36,7 +36,7 @@ func GetUserByLogin(login string) (*User, error) {
 func GetUserByEmail(email string) (*User, error) {
 	var user User
 
-	err := db.Where("email = ?", email).Error
+	err := db.Where("email = ?", email).Find(&user).Error
 
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func GetUserByEmail(email string) (*User, error) {
 	return &user, err
 }
 
-func AddUser(nickname, email, password string) error {
+func CreateUser(nickname, email, password string) error {
 	user := User{Nickname: nickname, Email: email}
 	user.SetPassword(password)
 

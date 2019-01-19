@@ -26,6 +26,10 @@ func checkUserCreate(userCreate UserCreate) []ErrorData {
 		errDataArr = append(errDataArr, ErrorData{Field: "email", Error: errStr})
 	}
 
+	if checkUserEmailExist(userCreate.Email) {
+		errDataArr = append(errDataArr, ErrorData{Field: "email", Error: "This email has been registered"})
+	}
+
 	errStr = checkPassword(userCreate.Pwd1)
 	if errStr != "" {
 		errDataArr = append(errDataArr, ErrorData{Field: "pwd1", Error: errStr})
@@ -54,7 +58,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.AddUser(userCreate.Nickname, userCreate.Email, userCreate.Pwd1); err != nil {
+	if err := models.CreateUser(userCreate.Nickname, userCreate.Email, userCreate.Pwd1); err != nil {
 		helpers.ResponseWithJSON(w, http.StatusInternalServerError, helpers.JSONResponse{Code: http.StatusInternalServerError,})
 	} else {
 		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code:http.StatusOK})

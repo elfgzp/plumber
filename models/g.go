@@ -19,20 +19,33 @@ type BaseModel struct {
 	Slug string `gorm:"unique_index"`
 }
 
-func (basModel *BaseModel) BeforeCreate() error {
+func (baseModel *BaseModel) BeforeCreate() error {
 	guid := xid.New()
-	basModel.Slug = guid.String()
+	baseModel.Slug = guid.String()
 	return nil
 }
 
 type Model struct {
 	gorm.Model
 	CreatedBy   User
-	CreatedByID int
+	CreatedByID uint
 
 	UpdatedBy   User
-	UpdatedByID int
+	UpdatedByID uint
 
 	DeletedBy   User
-	DeletedByID int
+	DeletedByID uint
+}
+
+func (m *Model) SetCreatedBy(u *User) {
+	m.CreatedByID = u.ID
+	m.UpdatedByID = u.ID
+}
+
+func (m *Model) SetUpdatedBy(u *User) {
+	m.UpdatedByID = u.ID
+}
+
+func (m *Model) SetDeletedBy(u *User) {
+	m.DeletedByID = u.ID
 }

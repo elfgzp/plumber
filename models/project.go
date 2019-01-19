@@ -6,10 +6,10 @@ type Project struct {
 	Desc string
 
 	Team   Team
-	TeamID int
+	TeamID uint
 
 	Owner   User
-	OwnerID int
+	OwnerID uint
 
 	Members    []User `gorm:"many2many:project_user_rel;association_jointable_foreignkey:user_id"`
 	TaskStates []TaskState

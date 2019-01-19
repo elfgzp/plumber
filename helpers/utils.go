@@ -28,7 +28,7 @@ func GenerateToken(email string) (string, error) {
 	return token.SignedString([]byte(config.JWTConf.Secret))
 }
 
-func CheckToken(tokenString string) jwt.Claims {
+func CheckToken(tokenString string) string {
 	token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("not authorization")
@@ -39,11 +39,12 @@ func CheckToken(tokenString string) jwt.Claims {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		now := time.Now().Unix()
 		if int64(claims["exp"].(float64)) > now {
-			return claims
+			email := claims["email"].(string)
+			return email
 		} else {
-			return nil
+			return ""
 		}
 	} else {
-		return nil
+		return ""
 	}
 }

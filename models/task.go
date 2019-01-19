@@ -12,13 +12,13 @@ type Task struct {
 	Completed bool
 
 	TaskState   TaskState
-	TaskStateID int
+	TaskStateID uint
 
 	TaskCheckPoint []TaskCheckPoint
 	TaskComments   []TaskComment
 
 	Assign   User
-	AssignID int
+	AssignID uint
 
 	Project   Project
 	ProjectID Project
