@@ -15,7 +15,7 @@ func init() {
 	getConfig(projectName)
 
 	PSQLConString = GetPostgreSQLConnectingString()
-	JWTConf = GetJWTConfig()
+	GetJWTConfig(&JWTConf)
 }
 
 type JWTConfig struct {
@@ -52,9 +52,7 @@ func GetPostgreSQLConnectingString() string {
 	return fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s sslmode=%s", host, port, usr, db, pwd, ssl)
 }
 
-func GetJWTConfig() JWTConfig {
-	var jwtConf JWTConfig
-	jwtConf.ExpSec = viper.GetInt("jwt.exp_sec")
-	jwtConf.Secret = viper.GetString("jwt.secret")
-	return jwtConf
+func GetJWTConfig(config *JWTConfig) {
+	config.ExpSec = viper.GetInt("jwt.exp_sec")
+	config.Secret = viper.GetString("jwt.secret")
 }

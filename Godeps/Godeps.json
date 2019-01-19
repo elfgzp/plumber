@@ -4,9 +4,19 @@
 	"GodepVersion": "v80",
 	"Deps": [
 		{
+			"ImportPath": "github.com/dgrijalva/jwt-go",
+			"Comment": "v3.2.0-4-g3af4c74",
+			"Rev": "3af4c746e1c248ee8491a3e0c6f7a9cd831e95f8"
+		},
+		{
 			"ImportPath": "github.com/fsnotify/fsnotify",
 			"Comment": "v1.4.7-6-gccc981b",
 			"Rev": "ccc981bf80385c528a65fbfdd49bf2d8da22aa23"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.6.2-20-g08e7f80",
+			"Rev": "08e7f807d38d6a870193019bb439056118661505"
 		},
 		{
 			"ImportPath": "github.com/hashicorp/hcl",
@@ -101,6 +111,11 @@
 			"ImportPath": "github.com/pelletier/go-toml",
 			"Comment": "v1.2.0-18-g27c6b39",
 			"Rev": "27c6b39a135b7dc87a14afb068809132fb7a9a8f"
+		},
+		{
+			"ImportPath": "github.com/rs/xid",
+			"Comment": "v1.2.1",
+			"Rev": "15d26544def341f036c5f8dca987a4cbe575032c"
 		},
 		{
 			"ImportPath": "github.com/spf13/afero",

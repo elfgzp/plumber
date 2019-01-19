@@ -18,7 +18,7 @@ var routes []Route
 func init() {
 	register(http.MethodPost, "/api/token", restful.CreateToken, nil)
 	register(http.MethodPost, "/api/token/verification", restful.TokenVerify, nil)
-	//register(http.MethodPost, "/api/users", )
+	register(http.MethodPost, "/api/users", restful.CreateUser, nil)
 }
 
 func NewRouter() *mux.Router {

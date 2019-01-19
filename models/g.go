@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/jinzhu/gorm"
-	"time"
+	"github.com/rs/xid"
 )
 
 var db *gorm.DB
@@ -15,17 +15,24 @@ func SetDB(database *gorm.DB) {
 }
 
 type BaseModel struct {
-	ID         uint `gorm:"primary_key"`
-	CreateAt   *time.Time
-	UpdateAt   *time.Time
-	DeletedAt  *time.Time
-	Slug       string
+	gorm.Model
+	Slug string `gorm:"unique_index"`
+}
+
+func (basModel *BaseModel) BeforeCreate() error {
+	guid := xid.New()
+	basModel.Slug = guid.String()
+	return nil
 }
 
 type Model struct {
-	BaseModel
-	CreateBy   User
-	UpdateBy   User
-	CreateByID int
-	UpdateByID int
+	gorm.Model
+	CreatedBy   User
+	CreatedByID int
+
+	UpdatedBy   User
+	UpdatedByID int
+
+	DeletedBy   User
+	DeletedByID int
 }

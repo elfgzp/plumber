@@ -34,7 +34,9 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&userLogin)
 	if err != nil || userLogin.Login == "" || userLogin.Password == "" {
 		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Login and password required."})
+		return
 	}
+
 	user := Authenticate(userLogin.Login, userLogin.Password)
 	if user == nil {
 		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Login or password wrong."})
@@ -48,12 +50,13 @@ func TokenVerify(w http.ResponseWriter, r *http.Request) {
 	var jwtToken JWTToken
 	err := json.NewDecoder(r.Body).Decode(&jwtToken)
 
-	if err != nil {
+	if err != nil || jwtToken.Token == "" {
 		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Token required."})
+		return
 	}
 
-	_, err = helpers.CheckToken(jwtToken.Token)
-	if err != nil {
+	token := helpers.CheckToken(jwtToken.Token)
+	if token == nil {
 		helpers.ResponseWithJSON(w, http.StatusUnauthorized, helpers.UnauthorizedResponse())
 	} else {
 		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK, Data: JWTToken{Token: jwtToken.Token}})

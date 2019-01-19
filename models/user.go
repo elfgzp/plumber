@@ -4,11 +4,11 @@ import "github.com/elfgzp/plumber/helpers"
 
 type User struct {
 	BaseModel
-	Nickname          string
-	Email             string
+	Nickname          string `gorm:"not null"`
+	Email             string `gorm:"not null;unique_index"`
 	MobileCountryCode string
 	Mobile            string
-	PasswordHash      string
+	PasswordHash      string    `gorm:"not null"`
 	Team              []Team    `gorm:"many2many:team_user_rel;association_jointable_foreignkey;team_id"`
 	Project           []Project `gorm:"many2many:project_user_rel;association_jointable_foreignkey:project_id"`
 	Tasks             []Task
@@ -16,6 +16,9 @@ type User struct {
 	NotifiedTasks     []User `gorm:"many2many:notified_task_user_rel;association_jointable_foreignkey:task_id"`
 }
 
+/*
+Use to process login by email or mobile
+ */
 func GetUserByLogin(login string) (*User, error) {
 	var user User
 
@@ -30,8 +33,20 @@ func GetUserByLogin(login string) (*User, error) {
 	return &user, err
 }
 
+func GetUserByEmail(email string) (*User, error) {
+	var user User
+
+	err := db.Where("email = ?", email).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, err
+}
+
 func AddUser(nickname, email, password string) error {
-	user := User{Nickname: nickname, Email: nickname}
+	user := User{Nickname: nickname, Email: email}
 	user.SetPassword(password)
 
 	err := db.Create(&user).Error
