@@ -25,6 +25,10 @@ func main() {
 		&models.TaskState{},
 		&models.TaskComment{},
 		&models.TaskCheckPoint{},
+		"plumber_team_user_rel",
+		"plumber_stared_task_user_rel",
+		"plumber_project_user_rel",
+		"plumber_notified_task_user_rel",
 	)
 	db.AutoMigrate(
 		&models.User{},
