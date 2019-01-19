@@ -29,7 +29,7 @@ func Authenticate(login, pwd string) *models.User {
 	return user
 }
 
-func CreateToken(w http.ResponseWriter, r *http.Request) {
+func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var userLogin UserLogin
 	err := json.NewDecoder(r.Body).Decode(&userLogin)
 	if err != nil || userLogin.Login == "" || userLogin.Password == "" {
@@ -46,7 +46,7 @@ func CreateToken(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func TokenVerify(w http.ResponseWriter, r *http.Request) {
+func TokenVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	var jwtToken JWTToken
 	err := json.NewDecoder(r.Body).Decode(&jwtToken)
 

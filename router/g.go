@@ -1,29 +1,40 @@
 package router
 
 import (
+	"fmt"
 	"github.com/elfgzp/plumber/controllers/restful"
+	"github.com/elfgzp/plumber/helpers"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
 type Route struct {
+	Name       string
 	Method     string
 	URI        string
 	Handler    http.HandlerFunc
 	MiddleWare mux.MiddlewareFunc
 }
 
-var routes []Route
+var routers []Route
 
 func init() {
-	register(http.MethodPost, "/api/token", restful.CreateToken, nil)
-	register(http.MethodPost, "/api/token/verification", restful.TokenVerify, nil)
-	register(http.MethodPost, "/api/users", restful.CreateUser, nil)
+	register("apiURL", http.MethodGet, "/api", func(w http.ResponseWriter, r *http.Request) {
+		apiURL := make(map[string]string)
+		for _, route := range routers {
+			apiURL[route.Name] = fmt.Sprintf("http://%s%s", r.Host, route.URI)
+		}
+		helpers.ResponseWithJSON(w, http.StatusOK, apiURL)
+	}, nil)
+
+	register("tokenURL", http.MethodPost, "/api/token", restful.CreateTokenHandler, nil)
+	register("tokenVerificationURL", http.MethodPost, "/api/token/verification", restful.TokenVerifyHandler, nil)
+	register("UsersURL", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
 }
 
 func NewRouter() *mux.Router {
 	router := mux.NewRouter()
-	for _, route := range routes {
+	for _, route := range routers {
 		r := router.Methods(route.Method).Path(route.URI)
 		if route.MiddleWare != nil {
 			r.Handler(route.MiddleWare(route.Handler))
@@ -34,6 +45,10 @@ func NewRouter() *mux.Router {
 	return router
 }
 
-func register(method, uri string, handler http.HandlerFunc, middleware mux.MiddlewareFunc) {
-	routes = append(routes, Route{method, uri, handler, middleware})
+func register(name, method, uri string, handler http.HandlerFunc, middleware mux.MiddlewareFunc) {
+	routers = append(routers, Route{name, method, uri, handler, middleware})
+}
+
+func GetRouters() []Route {
+	return routers
 }

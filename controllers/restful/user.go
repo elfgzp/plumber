@@ -39,7 +39,7 @@ func checkUserCreate(userCreate UserCreate) []ErrorData {
 	return errDataArr
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var userCreate UserCreate
 	err := json.NewDecoder(r.Body).Decode(&userCreate)
 
