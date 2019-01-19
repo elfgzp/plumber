@@ -55,8 +55,8 @@ func TokenVerify(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := helpers.CheckToken(jwtToken.Token)
-	if token == nil {
+	claims := helpers.CheckToken(jwtToken.Token)
+	if claims == nil {
 		helpers.ResponseWithJSON(w, http.StatusUnauthorized, helpers.UnauthorizedResponse())
 	} else {
 		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK, Data: JWTToken{Token: jwtToken.Token}})
