@@ -4,8 +4,11 @@ import (
 	"fmt"
 	"github.com/elfgzp/plumber/models"
 	"github.com/gorilla/context"
+	"github.com/gorilla/mux"
 	"net/http"
+	"net/url"
 	"regexp"
+	"strconv"
 )
 
 type FieldCheckError struct {
@@ -22,6 +25,36 @@ func getRequestUser(r *http.Request) *models.User {
 	user, _ := models.GetUserByEmail(userEmail.(string))
 
 	return user
+}
+
+func getQuery(r *http.Request) url.Values {
+	u := r.URL
+	query := u.Query()
+	return query
+}
+
+func getRouteParams(r *http.Request) map[string]string {
+	vars := mux.Vars(r)
+	return vars
+}
+
+func getPageLimitQuery(query url.Values) (int, int) {
+	page, err := strconv.Atoi(query.Get("page"))
+	if err != nil || page <= 0 {
+		page = 1
+	}
+
+	limit := DefaultPageLimit
+
+	if query.Get("limit") != "" {
+		limit, err = strconv.Atoi(query.Get("limit"))
+		if err != nil || limit <= 0 {
+			limit = 1
+		} else if limit > MaxPageLimit {
+			limit = MaxPageLimit
+		}
+	}
+	return page, limit
 }
 
 // Check functions

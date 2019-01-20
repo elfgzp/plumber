@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-	"github.com/elfgzp/plumber/database"
 	"github.com/elfgzp/plumber/helpers"
 	"log"
 )
@@ -80,22 +78,7 @@ func (u *User) SetPassword(password string) {
 }
 
 func (u *User) JoinedTeamIDs() []uint {
-	var ids []uint
-
-	rows, err := db.Table(fmt.Sprintf("%s%s", database.TablePrefix, "team_user_rel")).Where("user_id = ?", u.ID).Select("user_id, team_id").Rows()
-
-	if err != nil {
-		log.Println("Counting team error: ", err)
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		var uid, TeamID uint
-		_ = rows.Scan(&uid, &TeamID)
-		ids = append(ids, TeamID)
-	}
-
-	return ids
+	return u.Many2ManyIDs("team_user_rel", "user_id", "team_id")
 }
 
 func (u *User) GetJoinedTeamLimit(page, limit int) (*[]Team, int, error) {
@@ -105,7 +88,11 @@ func (u *User) GetJoinedTeamLimit(page, limit int) (*[]Team, int, error) {
 	offset := (page - 1) * limit
 
 	ids := u.JoinedTeamIDs()
-	if err := db.Where("id in (?)", ids).Order("created_at asc").Offset(offset).Limit(limit).Find(&teams).Error; err != nil {
+	if err := db.Where("id in (?)", ids).
+		Order("created_at asc").
+		Offset(offset).
+		Limit(limit).
+		Find(&teams).Error; err != nil {
 		log.Fatalln(err)
 		return nil, total, err
 	}

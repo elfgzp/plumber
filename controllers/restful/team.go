@@ -2,34 +2,17 @@ package restful
 
 import (
 	"encoding/json"
-	"github.com/elfgzp/plumber/serializers"
-	"net/http"
-	"strconv"
-
 	"github.com/elfgzp/plumber/helpers"
 	"github.com/elfgzp/plumber/models"
+	"github.com/elfgzp/plumber/serializers"
+	"net/http"
 )
 
 func ListTeamHandler(w http.ResponseWriter, r *http.Request) {
 	params := getRouteParams(r)
 	query := getQuery(r)
 	userSlug := params["userSlug"]
-	//query := getQuery(r)
-	page, err := strconv.Atoi(query.Get("page"))
-	if err != nil || page <= 0 {
-		page = 1
-	}
-
-	limit, err := strconv.Atoi(query.Get("limit"))
-	if err != nil || limit <= 0 {
-		limit = 1
-	} else if limit > MaxPageLimit {
-		limit = MaxPageLimit
-	}
-
-	//if _, ok := query["page"]; ok {
-	//	page = query["page"][0]
-	//}
+	page, limit := getPageLimitQuery(query)
 
 	user, _ := models.GetUserBySlug(userSlug)
 	if user == nil {

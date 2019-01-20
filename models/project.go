@@ -1,7 +1,5 @@
 package models
 
-import "log"
-
 type Project struct {
 	Model
 	Name string `gorm:"not null;unique_index"`
@@ -22,12 +20,14 @@ type Project struct {
 
 func GetProjectByName(name string) (*Project, error) {
 	var p Project
-	if err := db.Where("name = ?", name).
-		Find(&p).Error; err != nil {
-		log.Fatalln("%s", err)
-		return nil, err
-	}
-	return &p, nil
+	err := GetObjectByField(&p, "name", name)
+	return &p, err
+}
+
+func GetProjectBySlug(slug string) (*Project, error) {
+	var p Project
+	err := GetObjectByField(&p, "slug", slug)
+	return &p, err
 }
 
 func CreateProject(name, desc string, teamID uint, user *User, public bool) error {
@@ -38,6 +38,21 @@ func CreateProject(name, desc string, teamID uint, user *User, public bool) erro
 	}
 	_ = p.AddMember(user)
 	return nil
+}
+
+func (p *Project) MemberIDs() []uint {
+	return p.Many2ManyIDs("project_user_rel", "project_id", "user_id")
+}
+
+func (p *Project) IsProjectMember(uid uint) bool {
+	isMember := false
+	for _, memberID := range p.MemberIDs() {
+		if uid == memberID {
+			isMember = true
+			break
+		}
+	}
+	return isMember
 }
 
 func (p *Project) AddMember(u *User) error {

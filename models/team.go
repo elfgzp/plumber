@@ -17,23 +17,15 @@ type Team struct {
 }
 
 func GetTeamByName(name string) (*Team, error) {
-	return GetTeamByField("name", name)
+	var t Team
+	err := GetObjectByField(&t, "name", name)
+	return &t, err
 }
 
 func GetTeamBySlug(slug string) (*Team, error) {
-	return GetTeamByField("slug", slug)
-}
-
-func GetTeamByField(field, value string) (*Team, error) {
 	var t Team
-
-	if err := db.Where(fmt.Sprintf("%s = ?", field), value).
-		Find(&t).Error; err != nil {
-		log.Fatalln(err)
-		return nil, err
-	}
-
-	return &t, nil
+	err := GetObjectByField(&t, "slug", slug)
+	return &t, err
 }
 
 func (t *Team) MemberIDs() []uint {
@@ -78,4 +70,24 @@ func (t *Team) IsTeamMember(uid uint) bool {
 		}
 	}
 	return isMember
+}
+
+func (t *Team) GetTeamProjectsLimit(page, limit int) (*[]Project, int, error) {
+	var total int
+	var projects []Project
+
+	offset := (page - 1) * limit
+
+	if err := db.Where("team_id = ?", t.ID).
+		Order("created_at desc").
+		Offset(offset).
+		Limit(limit).
+		Find(&projects).Error; err != nil {
+		log.Fatalln(err)
+		return nil, total, err
+	}
+
+	db.Model(&Project{}).Where("team_id = ?", t.ID).Count(&total)
+
+	return &projects, total, nil
 }
