@@ -7,11 +7,11 @@ import (
 	"net/http"
 )
 
-func ListTeamHandler(w http.ResponseWriter, r http.Request) {
+func ListTeamHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func RetrieveTeamHandler(w http.ResponseWriter, r http.Request) {
+func RetrieveTeamHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
@@ -35,7 +35,19 @@ func checkTeamCreate(teamCreate TeamCreate) []ErrorData {
 
 func CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	var teamCreate TeamCreate
-	user := getRequestUser(r)
+	params := getRouteParams(r)
+	u, _ := models.GetUserBySlug(params["userSlug"])
+
+	if u == nil {
+		helpers.ResponseWithJSON(w, http.StatusNotFound, helpers.JSONResponse{Code: http.StatusNotFound, Msg:"User not found."})
+	}
+
+	ru := getRequestUser(r)
+	if u.ID != ru.ID {
+		helpers.ResponseWithJSON(w, http.StatusForbidden, helpers.JSONResponse{Code: http.StatusForbidden, Msg:"Permission denied."})
+	}
+
+
 	err := json.NewDecoder(r.Body).Decode(&teamCreate)
 	if err != nil {
 		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Json data invalid."})
@@ -47,7 +59,7 @@ func CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.CreateTeam(teamCreate.TeamName, user); err != nil {
+	if err := models.CreateTeam(teamCreate.TeamName, ru); err != nil {
 		helpers.ResponseWithJSON(w, http.StatusInternalServerError, helpers.JSONResponse{Code: http.StatusInternalServerError})
 		return
 	} else {

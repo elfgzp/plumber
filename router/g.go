@@ -33,9 +33,11 @@ func init() {
 	register("tokenURL", http.MethodPost, "/api/token", restful.CreateTokenHandler, nil)
 	register("tokenVerificationURL", http.MethodPost, "/api/token/verification", restful.TokenVerifyHandler, nil)
 
+	register("currentUserUrl", http.MethodGet, "/api/users/current", restful.GetCurrentUser, middleware.JWTTokenAuthMiddleware)
 	register("usersURL", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
 
-	register("teamsURL", http.MethodPost, "/api/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamsURL", http.MethodPost, "/api/users/{userSlug}/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamsURL", http.MethodPost, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
 }
 
 func NewRouter() *mux.Router {

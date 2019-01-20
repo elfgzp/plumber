@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/elfgzp/plumber/helpers"
 	"github.com/elfgzp/plumber/models"
+	"github.com/elfgzp/plumber/serializers"
 	"net/http"
 )
 
@@ -43,6 +44,11 @@ func checkUserCreate(userCreate UserCreate) []ErrorData {
 	return errDataArr
 }
 
+func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
+	u := getRequestUser(r)
+	helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK, Data: serializers.SerializeUser(u)})
+}
+
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	var userCreate UserCreate
 	err := json.NewDecoder(r.Body).Decode(&userCreate)
@@ -61,7 +67,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	if err := models.CreateUser(userCreate.Nickname, userCreate.Email, userCreate.Pwd1); err != nil {
 		helpers.ResponseWithJSON(w, http.StatusInternalServerError, helpers.JSONResponse{Code: http.StatusInternalServerError,})
 	} else {
-		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code:http.StatusOK})
+		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK})
 	}
 
 }

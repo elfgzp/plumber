@@ -16,7 +16,7 @@ func SetDB(database *gorm.DB) {
 
 type BaseModel struct {
 	gorm.Model
-	Slug string `gorm:"unique_index"`
+	Slug string `gorm:"unique_index" json:"slug"`
 }
 
 func (baseModel *BaseModel) BeforeCreate() error {
@@ -26,7 +26,7 @@ func (baseModel *BaseModel) BeforeCreate() error {
 }
 
 type Model struct {
-	gorm.Model
+	BaseModel
 	CreatedBy   User
 	CreatedByID uint
 
