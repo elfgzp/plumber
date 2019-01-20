@@ -1,10 +1,9 @@
 package main
 
 import (
-	db2 "github.com/elfgzp/plumber/db"
+	"github.com/elfgzp/plumber/database"
 	"github.com/elfgzp/plumber/models"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
-	"log"
 )
 
 /*
@@ -12,15 +11,17 @@ import (
 */
 
 func main() {
-	log.Println("Migrate database ...")
-	db := db2.ConnectToDB()
+	db := database.ConnectToDB()
 	defer db.Close()
 	models.SetDB(db)
 	db.LogMode(true)
 
-	demoUserEmail := "plumber@elfgzp.cn"
-	_ = models.CreateUser("admin", demoUserEmail, "123456")
-	user, _ := models.GetUserByEmail(demoUserEmail)
+	u1e := "plumber@elfgzp.cn"
+	_ = models.CreateUser("admin", u1e, "123456")
+	user, _ := models.GetUserByEmail(u1e)
+
+	u2e := "demo@elfgzp.cm"
+	_ = models.CreateUser("demo", u2e, "123456")
 
 	_ = models.CreateTeam("plumber", user)
 	_ = models.CreateTeam("plumber-front-end", user)

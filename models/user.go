@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+	"github.com/elfgzp/plumber/database"
 	"github.com/elfgzp/plumber/helpers"
 	"log"
 )
@@ -10,7 +12,7 @@ type User struct {
 	Nickname          string `gorm:"not null"`
 	Email             string `gorm:"not null;unique_index"`
 	MobileCountryCode string
-	Mobile            string	`json:"mobile"`
+	Mobile            string    `json:"mobile"`
 	PasswordHash      string    `gorm:"not null"`
 	Teams             []Team    `gorm:"many2many:team_user_rel;association_jointable_foreignkey:team_id"`
 	Projects          []Project `gorm:"many2many:project_user_rel;association_jointable_foreignkey:project_id"`
@@ -21,7 +23,7 @@ type User struct {
 
 /*
 Use to process login by email or mobile
- */
+*/
 func GetUserByLogin(login string) (*User, error) {
 	var user User
 
@@ -80,7 +82,7 @@ func (u *User) SetPassword(password string) {
 func (u *User) JoinedTeamIDs() []int {
 	var ids []int
 
-	rows, err := db.Table("team_user_rel").Where("user_id = ?", u.ID).Select("user_id, team_id").Rows()
+	rows, err := db.Table(fmt.Sprintf("%s%s", database.TablePrefix, "team_user_rel")).Where("user_id = ?", u.ID).Select("user_id, team_id").Rows()
 
 	if err != nil {
 		log.Println("Counting team error: ", err)
@@ -88,15 +90,15 @@ func (u *User) JoinedTeamIDs() []int {
 
 	defer rows.Close()
 	for rows.Next() {
-		var id, TeamID int
-		_ = rows.Scan(&id, &TeamID)
-		ids = append(ids, id)
+		var uid, TeamID int
+		_ = rows.Scan(&uid, &TeamID)
+		ids = append(ids, TeamID)
 	}
 
 	return ids
 }
 
-func (u *User) GetJoinedTeamLimit(page, limit int) ([]Team, int, error) {
+func (u *User) GetJoinedTeamLimit(page, limit int) (*[]Team, int, error) {
 	var total int
 	var teams []Team
 
@@ -104,9 +106,10 @@ func (u *User) GetJoinedTeamLimit(page, limit int) ([]Team, int, error) {
 
 	ids := u.JoinedTeamIDs()
 	if err := db.Where("id in (?)", ids).Order("created_at asc").Offset(offset).Limit(limit).Find(&teams).Error; err != nil {
+		log.Fatalln(err)
 		return nil, total, err
 	}
 
 	db.Model(&Team{}).Where("id in (?)", ids).Count(&total)
-	return teams, total, nil
+	return &teams, total, nil
 }

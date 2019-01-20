@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	db2 "github.com/elfgzp/plumber/db"
+	"github.com/elfgzp/plumber/database"
 	"github.com/elfgzp/plumber/models"
 	"github.com/elfgzp/plumber/router"
 	"github.com/gorilla/context"
@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	db := db2.ConnectToDB()
+	db := database.ConnectToDB()
 	defer db.Close()
 	models.SetDB(db)
 

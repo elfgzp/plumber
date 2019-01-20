@@ -1,7 +1,7 @@
 package main
 
 import (
-	db2 "github.com/elfgzp/plumber/db"
+	"github.com/elfgzp/plumber/database"
 	"github.com/elfgzp/plumber/models"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"log"
@@ -13,7 +13,7 @@ import (
 
 func main() {
 	log.Println("Migrate database ...")
-	db := db2.ConnectToDB()
+	db := database.ConnectToDB()
 	defer db.Close()
 	models.SetDB(db)
 	db.LogMode(true)

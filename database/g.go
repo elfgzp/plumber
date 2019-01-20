@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"fmt"
@@ -7,9 +7,17 @@ import (
 	"log"
 )
 
+var (
+	TablePrefix string
+)
+
+func init() {
+	TablePrefix = "plumber_"
+}
+
 /*
 	Connect to database
- */
+*/
 func ConnectToDB() *gorm.DB {
 	log.Println("Connect to postgresql database ...")
 	db, err := gorm.Open("postgres", config.PSQLConString)
@@ -19,7 +27,7 @@ func ConnectToDB() *gorm.DB {
 	db.SingularTable(true)
 
 	gorm.DefaultTableNameHandler = func(db *gorm.DB, defaultTableName string) string {
-		return "plumber_" + defaultTableName
+		return fmt.Sprintf("%s%s", TablePrefix, defaultTableName)
 	}
 
 	return db

@@ -2,11 +2,12 @@ package router
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/elfgzp/plumber/controllers/restful"
 	"github.com/elfgzp/plumber/helpers"
 	"github.com/elfgzp/plumber/middleware"
 	"github.com/gorilla/mux"
-	"net/http"
 )
 
 type Route struct {
@@ -37,7 +38,7 @@ func init() {
 	register("usersURL", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
 
 	register("teamsURL", http.MethodPost, "/api/users/{userSlug}/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
-	register("teamsURL", http.MethodPost, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamsURL", http.MethodGet, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
 }
 
 func NewRouter() *mux.Router {
@@ -55,8 +56,4 @@ func NewRouter() *mux.Router {
 
 func register(name, method, uri string, handler http.HandlerFunc, middleware mux.MiddlewareFunc) {
 	routers = append(routers, Route{name, method, uri, handler, middleware})
-}
-
-func GetRouters() []Route {
-	return routers
 }

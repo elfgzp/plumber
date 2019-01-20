@@ -65,7 +65,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := models.CreateUser(userCreate.Nickname, userCreate.Email, userCreate.Pwd1); err != nil {
-		helpers.ResponseWithJSON(w, http.StatusInternalServerError, helpers.JSONResponse{Code: http.StatusInternalServerError,})
+		helpers.ResponseWithJSON(w, http.StatusInternalServerError, helpers.InternalServerErrorResponse())
 	} else {
 		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK})
 	}

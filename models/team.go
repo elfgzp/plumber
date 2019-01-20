@@ -1,8 +1,10 @@
 package models
 
+import "log"
+
 type Team struct {
 	Model
-	Name string
+	Name string `gorm:"not null;unique_index"`
 
 	OwnerID uint
 	Owner   User
@@ -11,14 +13,15 @@ type Team struct {
 }
 
 func GetTeamByName(name string) (*Team, error) {
-	var team *Team
+	var team Team
 
 	if err := db.Where("name = ?", name).
 		Find(&team).Error; err != nil {
+		log.Fatalln(err)
 		return nil, err
 	}
 
-	return team, nil
+	return &team, nil
 }
 
 func CreateTeam(name string, user *User) error {

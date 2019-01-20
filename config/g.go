@@ -2,11 +2,12 @@ package config
 
 import (
 	"fmt"
+
 	"github.com/spf13/viper"
 )
 
 var (
-	JWTConf JWTConfig
+	JWTConf       JWTConfig
 	PSQLConString string
 )
 
@@ -20,15 +21,16 @@ func init() {
 
 type JWTConfig struct {
 	ExpSec int
-	Secret  string
+	Secret string
 }
 
 /*
 	Get config
- */
+*/
 func getConfig(projectName string) {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
+	viper.AddConfigPath(fmt.Sprintf("$GOPATH/src/github.com/elfgzp/%s", projectName))
 	viper.AddConfigPath(fmt.Sprintf("$HOME/.%s", projectName))
 	viper.AddConfigPath(fmt.Sprintf("/data/docker/config/%s", projectName))
 
@@ -40,7 +42,7 @@ func getConfig(projectName string) {
 
 /*
 	Get postgresql connecting string param
- */
+*/
 func GetPostgreSQLConnectingString() string {
 	host := viper.GetString("postgresql.host")
 	port := viper.GetInt("postgresql.port")
