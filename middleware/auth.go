@@ -12,13 +12,13 @@ func JWTTokenAuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		tokenStr := r.Header.Get("authorization")
 		if tokenStr == "" {
-			helpers.ResponseWithJSON(w, http.StatusUnauthorized, helpers.UnauthorizedResponse())
+			helpers.Response401(w)
 		} else {
 			email := helpers.CheckToken(tokenStr)
 			if email == "" {
-				helpers.ResponseWithJSON(w, http.StatusUnauthorized, helpers.UnauthorizedResponse())
+				helpers.Response401(w)
 			} else {
-				log.Println(fmt.Sprintf("%s %s", email, r.RemoteAddr, r.URL))
+				log.Println(fmt.Sprintf("%s %s %s", email, r.RemoteAddr, r.URL.Path))
 				context.Set(r, "userEmail", email)
 				next.ServeHTTP(w, r)
 			}

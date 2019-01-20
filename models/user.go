@@ -79,8 +79,8 @@ func (u *User) SetPassword(password string) {
 	u.PasswordHash = helpers.GeneratePasswordHash(password)
 }
 
-func (u *User) JoinedTeamIDs() []int {
-	var ids []int
+func (u *User) JoinedTeamIDs() []uint {
+	var ids []uint
 
 	rows, err := db.Table(fmt.Sprintf("%s%s", database.TablePrefix, "team_user_rel")).Where("user_id = ?", u.ID).Select("user_id, team_id").Rows()
 
@@ -90,7 +90,7 @@ func (u *User) JoinedTeamIDs() []int {
 
 	defer rows.Close()
 	for rows.Next() {
-		var uid, TeamID int
+		var uid, TeamID uint
 		_ = rows.Scan(&uid, &TeamID)
 		ids = append(ids, TeamID)
 	}

@@ -1,6 +1,10 @@
 package models
 
-import "log"
+import (
+	"fmt"
+	"github.com/elfgzp/plumber/database"
+	"log"
+)
 
 type Team struct {
 	Model
@@ -13,15 +17,42 @@ type Team struct {
 }
 
 func GetTeamByName(name string) (*Team, error) {
+	return GetTeamByField("name", name)
+}
+
+func GetTeamBySlug(slug string) (*Team, error) {
+	return GetTeamByField("slug", slug)
+}
+
+func GetTeamByField(field, value string) (*Team, error) {
 	var team Team
 
-	if err := db.Where("name = ?", name).
+	if err := db.Where(fmt.Sprintf("%s = ?", field), value).
 		Find(&team).Error; err != nil {
 		log.Fatalln(err)
 		return nil, err
 	}
 
 	return &team, nil
+}
+
+func (t *Team) MemberIDs() []uint {
+	var ids []uint
+
+	rows, err := db.Table(fmt.Sprintf("%s%s", database.TablePrefix, "team_user_rel")).Where("team_id = ?", t.ID).Select("team_id, user_id").Rows()
+
+	if err != nil {
+		log.Println("Counting team error: ", err)
+	}
+
+	defer rows.Close()
+	for rows.Next() {
+		var tid, UserID uint
+		_ = rows.Scan(&tid, &UserID)
+		ids = append(ids, UserID)
+	}
+
+	return ids
 }
 
 func CreateTeam(name string, user *User) error {

@@ -9,10 +9,12 @@ import (
 
 var (
 	DefaultPageLimit int
+	MaxPageLimit     int
 )
 
 func init() {
 	DefaultPageLimit = 10
+	MaxPageLimit = 100
 }
 
 func getQuery(r *http.Request) url.Values {

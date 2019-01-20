@@ -28,7 +28,7 @@ func init() {
 				apiURL[route.Name] = fmt.Sprintf("http://%s%s", r.Host, route.URI)
 			}
 		}
-		helpers.ResponseWithJSON(w, http.StatusOK, apiURL)
+		helpers.Response200(w, "", apiURL)
 	}, nil)
 
 	register("tokenURL", http.MethodPost, "/api/token", restful.CreateTokenHandler, nil)
@@ -37,8 +37,13 @@ func init() {
 	register("currentUserUrl", http.MethodGet, "/api/users/current", restful.GetCurrentUser, middleware.JWTTokenAuthMiddleware)
 	register("usersURL", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
 
-	register("teamsURL", http.MethodPost, "/api/users/{userSlug}/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
-	register("teamsURL", http.MethodGet, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("userTeamsURL", http.MethodPost, "/api/users/{userSlug}/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("userTeamsURL", http.MethodGet, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamURL", http.MethodGet, "/api/teams/{teamSlug}", restful.RetrieveTeamHandler, middleware.JWTTokenAuthMiddleware)
+
+	register("teamProductsURL", http.MethodPost, "/api/teams/{teamSlug}/products", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamProductsURL", http.MethodGet, "/api/teams/{teamSlug}/products", restful.ListProductHandler, middleware.JWTTokenAuthMiddleware)
+	register("productURL", http.MethodGet, "/api/products/{productSlug}", restful.RetrieveProductHandler, middleware.JWTTokenAuthMiddleware)
 }
 
 func NewRouter() *mux.Router {

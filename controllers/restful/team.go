@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/elfgzp/plumber/serializers"
 	"net/http"
+	"strconv"
 
 	"github.com/elfgzp/plumber/helpers"
 	"github.com/elfgzp/plumber/models"
@@ -11,10 +12,20 @@ import (
 
 func ListTeamHandler(w http.ResponseWriter, r *http.Request) {
 	params := getRouteParams(r)
+	query := getQuery(r)
 	userSlug := params["userSlug"]
 	//query := getQuery(r)
-	page := 1
-	limit := DefaultPageLimit
+	page, err := strconv.Atoi(query.Get("page"))
+	if err != nil || page <= 0 {
+		page = 1
+	}
+
+	limit, err := strconv.Atoi(query.Get("limit"))
+	if err != nil || limit <= 0 {
+		limit = 1
+	} else if limit > MaxPageLimit {
+		limit = MaxPageLimit
+	}
 
 	//if _, ok := query["page"]; ok {
 	//	page = query["page"][0]
@@ -22,7 +33,7 @@ func ListTeamHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, _ := models.GetUserBySlug(userSlug)
 	if user == nil {
-		helpers.ResponseWithJSON(w, http.StatusNotFound, helpers.JSONResponse{Code: http.StatusNotFound, Msg: "User not found."})
+		helpers.Response404(w, "User not found.")
 		return
 	}
 	teams, total, _ := user.GetJoinedTeamLimit(page, limit)
@@ -35,13 +46,40 @@ func ListTeamHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		tsi = make([]interface{}, 0)
 	}
-
-	helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK, Data: helpers.PagedData{Total: total, Page: page, Limit: limit, Result: tsi}})
+	helpers.Response200(w, "", helpers.PagedData{Total: total, Page: page, Limit: limit, Result: tsi})
 
 }
 
 func RetrieveTeamHandler(w http.ResponseWriter, r *http.Request) {
+	user := getRequestUser(r)
+	params := getRouteParams(r)
+	teamSlug := params["teamSlug"]
 
+	team, err := models.GetTeamBySlug(teamSlug)
+	if err != nil {
+		helpers.Response500(w)
+		return
+	}
+
+	if team == nil {
+		helpers.Response404(w, "Team not found.")
+		return
+	}
+
+	isMember := false
+	for _, memberID := range team.MemberIDs() {
+		if user.ID == memberID {
+			isMember = true
+			break
+		}
+	}
+
+	if !isMember {
+		helpers.Response403(w)
+		return
+	}
+
+	helpers.Response200(w, "", serializers.SerializeTeam(team))
 }
 
 type TeamCreate struct {
@@ -68,32 +106,32 @@ func CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 	u, _ := models.GetUserBySlug(params["userSlug"])
 
 	if u == nil {
-		helpers.ResponseWithJSON(w, http.StatusNotFound, helpers.JSONResponse{Code: http.StatusNotFound, Msg: "User not found."})
+		helpers.Response404(w, "User not found.")
 		return
 	}
 
 	ru := getRequestUser(r)
 	if u.ID != ru.ID {
-		helpers.ResponseWithJSON(w, http.StatusForbidden, helpers.JSONResponse{Code: http.StatusForbidden, Msg: "Permission denied."})
+		helpers.Response403(w)
 		return
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&teamCreate)
 	if err != nil {
-		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Json data invalid."})
+		helpers.Response400(w, "Json data invalid.", nil)
 		return
 	}
 
 	if errs := checkTeamCreate(teamCreate); len(errs) > 0 {
-		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Data: errs})
+		helpers.Response400(w, "", errs)
 		return
 	}
 
 	if err := models.CreateTeam(teamCreate.TeamName, ru); err != nil {
-		helpers.ResponseWithJSON(w, http.StatusInternalServerError, helpers.InternalServerErrorResponse())
+		helpers.Response500(w)
 		return
 	} else {
-		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK})
+		helpers.Response200(w, "", nil)
 	}
 
 }

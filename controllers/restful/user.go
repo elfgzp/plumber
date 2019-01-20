@@ -46,7 +46,7 @@ func checkUserCreate(userCreate UserCreate) []ErrorData {
 
 func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	u := getRequestUser(r)
-	helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK, Data: serializers.SerializeUser(u)})
+	helpers.Response200(w, "", serializers.SerializeUser(u))
 }
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -54,20 +54,20 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&userCreate)
 
 	if err != nil {
-		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Json data invalid."})
+		helpers.Response400(w, "Json data invalid.", nil)
 		return
 	}
 
 	errs := checkUserCreate(userCreate)
 	if len(errs) != 0 {
-		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Data: errs})
+		helpers.Response400(w, "", errs)
 		return
 	}
 
 	if err := models.CreateUser(userCreate.Nickname, userCreate.Email, userCreate.Pwd1); err != nil {
-		helpers.ResponseWithJSON(w, http.StatusInternalServerError, helpers.InternalServerErrorResponse())
+		helpers.Response500(w)
 	} else {
-		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK})
+		helpers.Response201(w, "", nil)
 	}
 
 }

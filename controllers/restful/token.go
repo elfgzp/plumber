@@ -33,16 +33,16 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	var userLogin UserLogin
 	err := json.NewDecoder(r.Body).Decode(&userLogin)
 	if err != nil || userLogin.Login == "" || userLogin.Password == "" {
-		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Login and password required."})
+		helpers.Response400(w, "Login and password required.", nil)
 		return
 	}
 
 	user := Authenticate(userLogin.Login, userLogin.Password)
 	if user == nil {
-		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Login or password wrong."})
+		helpers.Response400(w, "Login or password wrong.", nil)
 	} else {
 		token, _ := helpers.GenerateToken(user.Email)
-		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK, Data: JWTToken{Token: token}})
+		helpers.Response201(w, "", JWTToken{Token: token})
 	}
 }
 
@@ -51,15 +51,15 @@ func TokenVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&jwtToken)
 
 	if err != nil || jwtToken.Token == "" {
-		helpers.ResponseWithJSON(w, http.StatusBadRequest, helpers.JSONResponse{Code: http.StatusBadRequest, Msg: "Token required."})
+		helpers.Response400(w, "Token required.", nil)
 		return
 	}
 
 	email := helpers.CheckToken(jwtToken.Token)
 	if email == "" {
-		helpers.ResponseWithJSON(w, http.StatusUnauthorized, helpers.UnauthorizedResponse())
+		helpers.Response401(w)
 	} else {
-		helpers.ResponseWithJSON(w, http.StatusOK, helpers.JSONResponse{Code: http.StatusOK, Data: JWTToken{Token: jwtToken.Token}})
+		helpers.Response200(w, "", JWTToken{Token: jwtToken.Token})
 	}
 
 }
