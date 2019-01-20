@@ -59,7 +59,7 @@ func TokenVerifyHandler(w http.ResponseWriter, r *http.Request) {
 	if email == "" {
 		helpers.Response401(w)
 	} else {
-		helpers.Response200(w, "", JWTToken{Token: jwtToken.Token})
+		helpers.Response201(w, "", JWTToken{Token: jwtToken.Token})
 	}
 
 }

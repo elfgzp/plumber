@@ -15,30 +15,30 @@ type UserCreate struct {
 	Pwd2     string `json:"pwd2"`
 }
 
-func checkUserCreate(userCreate UserCreate) []ErrorData {
-	var errDataArr []ErrorData
+func checkUserCreate(userCreate UserCreate) []FieldCheckError {
+	var errDataArr []FieldCheckError
 	var errStr = ""
 	if userCreate.Nickname == "" {
-		errDataArr = append(errDataArr, ErrorData{Field: "nickname", Error: "Nick name required"})
+		errDataArr = append(errDataArr, FieldCheckError{Field: "nickname", Error: "Nick name required"})
 	}
 
 	errStr = checkEmail(userCreate.Email)
 	if errStr != "" {
-		errDataArr = append(errDataArr, ErrorData{Field: "email", Error: errStr})
+		errDataArr = append(errDataArr, FieldCheckError{Field: "email", Error: errStr})
 	}
 
-	if checkUserEmailExist(userCreate.Email) {
-		errDataArr = append(errDataArr, ErrorData{Field: "email", Error: "This email has been registered"})
+	if userEmailExist(userCreate.Email) {
+		errDataArr = append(errDataArr, FieldCheckError{Field: "email", Error: "This email has been registered"})
 	}
 
 	errStr = checkPassword(userCreate.Pwd1)
 	if errStr != "" {
-		errDataArr = append(errDataArr, ErrorData{Field: "pwd1", Error: errStr})
+		errDataArr = append(errDataArr, FieldCheckError{Field: "pwd1", Error: errStr})
 	}
 
 	errStr = checkPwdRepeatMatch(userCreate.Pwd1, userCreate.Pwd2)
 	if errStr != "" {
-		errDataArr = append(errDataArr, ErrorData{Field: "pwd2", Error: errStr})
+		errDataArr = append(errDataArr, FieldCheckError{Field: "pwd2", Error: errStr})
 	}
 
 	return errDataArr

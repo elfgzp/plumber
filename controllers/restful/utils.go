@@ -8,7 +8,7 @@ import (
 	"regexp"
 )
 
-type ErrorData struct {
+type FieldCheckError struct {
 	Field string `json:"field"`
 	Error string `json:"error"`
 }
@@ -61,14 +61,20 @@ func checkEmail(email string) string {
 	return ""
 }
 
-func checkUserEmailExist(email string) bool {
+func userEmailExist(email string) bool {
 	user, _ := models.GetUserByEmail(email)
 
 	return user != nil
 }
 
-func checkTeamNameExist(teamName string) bool {
+func teamNameExist(teamName string) bool {
 	team, _ := models.GetTeamByName(teamName)
 
 	return team != nil
+}
+
+func projectNameExist(name string) bool {
+	project, _ := models.GetProjectByName(name)
+
+	return project != nil
 }

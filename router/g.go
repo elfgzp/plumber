@@ -41,9 +41,9 @@ func init() {
 	register("userTeamsURL", http.MethodGet, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
 	register("teamURL", http.MethodGet, "/api/teams/{teamSlug}", restful.RetrieveTeamHandler, middleware.JWTTokenAuthMiddleware)
 
-	register("teamProductsURL", http.MethodPost, "/api/teams/{teamSlug}/products", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
-	register("teamProductsURL", http.MethodGet, "/api/teams/{teamSlug}/products", restful.ListProductHandler, middleware.JWTTokenAuthMiddleware)
-	register("productURL", http.MethodGet, "/api/products/{productSlug}", restful.RetrieveProductHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamProjectsURL", http.MethodPost, "/api/teams/{teamSlug}/projects", restful.CreateProjectHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamProjectsURL", http.MethodGet, "/api/teams/{teamSlug}/projects", restful.ListProjectHandler, middleware.JWTTokenAuthMiddleware)
+	register("ProjectURL", http.MethodGet, "/api/projects/{projectSlug}", restful.RetrieveProjectHandler, middleware.JWTTokenAuthMiddleware)
 }
 
 func NewRouter() *mux.Router {

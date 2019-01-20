@@ -66,15 +66,7 @@ func RetrieveTeamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	isMember := false
-	for _, memberID := range team.MemberIDs() {
-		if user.ID == memberID {
-			isMember = true
-			break
-		}
-	}
-
-	if !isMember {
+	if !team.IsTeamMember(user.ID) {
 		helpers.Response403(w)
 		return
 	}
@@ -86,14 +78,14 @@ type TeamCreate struct {
 	TeamName string `json:"teamName"`
 }
 
-func checkTeamCreate(teamCreate TeamCreate) []ErrorData {
-	var errs []ErrorData
+func checkTeamCreate(teamCreate TeamCreate) []FieldCheckError {
+	var errs []FieldCheckError
 	if teamCreate.TeamName == "" {
-		errs = append(errs, ErrorData{"teamName", "Team Name required"})
+		errs = append(errs, FieldCheckError{"teamName", "Team name required"})
 	}
 
-	if checkTeamNameExist(teamCreate.TeamName) {
-		errs = append(errs, ErrorData{"teamName", "Team Name exist"})
+	if teamNameExist(teamCreate.TeamName) {
+		errs = append(errs, FieldCheckError{"teamName", "Team name existed"})
 	}
 
 	return errs
@@ -131,7 +123,7 @@ func CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 		helpers.Response500(w)
 		return
 	} else {
-		helpers.Response200(w, "", nil)
+		helpers.Response201(w, "", nil)
 	}
 
 }

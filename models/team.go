@@ -10,7 +10,7 @@ type Team struct {
 	Model
 	Name string `gorm:"not null;unique_index"`
 
-	OwnerID uint
+	OwnerID uint `gorm:"not null"`
 	Owner   User
 
 	Members []User `gorm:"many2many:team_user_rel;association_jointable_foreignkey:user_id"`
@@ -25,15 +25,15 @@ func GetTeamBySlug(slug string) (*Team, error) {
 }
 
 func GetTeamByField(field, value string) (*Team, error) {
-	var team Team
+	var t Team
 
 	if err := db.Where(fmt.Sprintf("%s = ?", field), value).
-		Find(&team).Error; err != nil {
+		Find(&t).Error; err != nil {
 		log.Fatalln(err)
 		return nil, err
 	}
 
-	return &team, nil
+	return &t, nil
 }
 
 func (t *Team) MemberIDs() []uint {
@@ -56,15 +56,26 @@ func (t *Team) MemberIDs() []uint {
 }
 
 func CreateTeam(name string, user *User) error {
-	team := Team{Name: name, OwnerID: user.ID}
-	team.SetCreatedBy(user)
-	if err := db.Create(&team).Error; err != nil {
+	t := Team{Name: name, OwnerID: user.ID}
+	t.SetCreatedBy(user)
+	if err := db.Create(&t).Error; err != nil {
 		return err
 	}
-	_ = team.AddMember(user)
+	_ = t.AddMember(user)
 	return nil
 }
 
 func (t *Team) AddMember(u *User) error {
 	return db.Model(t).Association("Members").Append(u).Error
+}
+
+func (t *Team) IsTeamMember(uid uint) bool {
+	isMember := false
+	for _, memberID := range t.MemberIDs() {
+		if uid == memberID {
+			isMember = true
+			break
+		}
+	}
+	return isMember
 }
