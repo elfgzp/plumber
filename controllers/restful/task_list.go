@@ -191,7 +191,7 @@ func UpdateTaskListHandler(w http.ResponseWriter, r *http.Request) {
 	if err := models.UpdateObject(&taskList, contents); err != nil {
 		helpers.Response500(w)
 	} else {
-		helpers.Response200(w, "", nil)
+		helpers.Response200(w, "", serializers.SerializeTaskList(taskList))
 	}
 
 }
