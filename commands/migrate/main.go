@@ -22,7 +22,7 @@ func main() {
 		&models.Team{},
 		&models.Project{},
 		&models.Task{},
-		&models.TaskState{},
+		&models.TaskList{},
 		&models.TaskComment{},
 		&models.TaskCheckPoint{},
 	)

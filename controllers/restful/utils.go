@@ -111,3 +111,9 @@ func projectNameExist(name string) bool {
 
 	return project != nil
 }
+
+func taskListNameExsit(name string) bool {
+	taskList, _ := models.GetTaskListByName(name)
+
+	return taskList != nil
+}

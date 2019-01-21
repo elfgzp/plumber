@@ -9,6 +9,7 @@ import (
 )
 
 func ListTeamHandler(w http.ResponseWriter, r *http.Request) {
+	ru := getRequestUser(r)
 	params := getRouteParams(r)
 	query := getQuery(r)
 	userSlug := params["userSlug"]
@@ -19,6 +20,12 @@ func ListTeamHandler(w http.ResponseWriter, r *http.Request) {
 		helpers.Response404(w, "User not found.")
 		return
 	}
+
+	if userSlug != ru.Slug {
+		helpers.Response403(w)
+		return
+	}
+
 	teams, total, _ := user.GetJoinedTeamLimit(page, limit)
 	var tsi []interface{}
 	if total != 0 {
@@ -102,11 +109,11 @@ func CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.CreateTeam(teamCreate.TeamName, ru); err != nil {
+	if team, err := models.CreateTeam(teamCreate.TeamName, ru); err != nil {
 		helpers.Response500(w)
 		return
 	} else {
-		helpers.Response201(w, "", nil)
+		helpers.Response201(w, "", serializers.SerializeTeam(team))
 	}
 
 }

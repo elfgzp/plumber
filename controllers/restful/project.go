@@ -54,11 +54,11 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.CreateProject(projectCreate.Name, projectCreate.Desc, team.ID, ru, false); err != nil {
+	if project, err := models.CreateProject(projectCreate.Name, projectCreate.Desc, team.ID, ru, false); err != nil {
 		helpers.Response500(w)
 		return
 	} else {
-		helpers.Response201(w, "", nil)
+		helpers.Response201(w, "", serializers.SerializeProject(project))
 	}
 
 }

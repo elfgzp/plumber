@@ -17,18 +17,20 @@ func main() {
 	db.LogMode(true)
 
 	u1e := "plumber@elfgzp.cn"
-	_ = models.CreateUser("admin", u1e, "123456")
-	u1, _ := models.GetUserByEmail(u1e)
-	user, _ := models.GetUserByEmail(u1e)
+	u1, _ := models.CreateUser("admin", u1e, "123456")
 
 	u2e := "demo@elfgzp.cm"
-	_ = models.CreateUser("demo", u2e, "123456")
+	_, _ = models.CreateUser("demo", u2e, "123456")
 
-	_ = models.CreateTeam("plumber", user)
-	plumberTeam, _ := models.GetTeamByName("plumber")
-	_ = models.CreateTeam("plumber-front-end", user)
+	t1, _ := models.CreateTeam("plumber", u1)
+	_, _ = models.CreateTeam("plumber-front-end", u1)
 
-	_ = models.CreateProject("plumber-project", "Project management tool develop by golang", plumberTeam.ID, u1, false)
-	_ = models.CreateProject("plumber-demo-project", "Project management tool develop by golang (Demo)", plumberTeam.ID, u1, false)
+	p1, _ := models.CreateProject("plumber-project", "Project management tool develop by golang", t1.ID, u1, false)
+	_, _ = models.CreateProject("plumber-demo-project", "Project management tool develop by golang (Demo)", t1.ID, u1, false)
 
+	_, _ = models.CreateTaskList("需求", p1.ID, u1)
+	_, _ = models.CreateTaskList("设计", p1.ID, u1)
+	_, _ = models.CreateTaskList("开发", p1.ID, u1)
+	_, _ = models.CreateTaskList("测试", p1.ID, u1)
+	_, _ = models.CreateTaskList("上线", p1.ID, u1)
 }

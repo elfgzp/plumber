@@ -1,14 +1,8 @@
 package models
 
-import (
-	"fmt"
-	"github.com/elfgzp/plumber/database"
-	"log"
-)
-
 type Team struct {
 	Model
-	Name string `gorm:"not null;unique_index"`
+	Name string `gorm:"not null;"`
 
 	OwnerID uint `gorm:"not null"`
 	Owner   User
@@ -19,42 +13,33 @@ type Team struct {
 func GetTeamByName(name string) (*Team, error) {
 	var t Team
 	err := GetObjectByField(&t, "name", name)
+	if err != nil {
+		return nil, err
+	}
 	return &t, err
 }
 
 func GetTeamBySlug(slug string) (*Team, error) {
 	var t Team
 	err := GetObjectByField(&t, "slug", slug)
+	if err != nil {
+		return nil, err
+	}
 	return &t, err
 }
 
 func (t *Team) MemberIDs() []uint {
-	var ids []uint
-
-	rows, err := db.Table(fmt.Sprintf("%s%s", database.TablePrefix, "team_user_rel")).Where("team_id = ?", t.ID).Select("team_id, user_id").Rows()
-
-	if err != nil {
-		log.Println("Counting team error: ", err)
-	}
-
-	defer rows.Close()
-	for rows.Next() {
-		var tid, UserID uint
-		_ = rows.Scan(&tid, &UserID)
-		ids = append(ids, UserID)
-	}
-
-	return ids
+	return t.Many2ManyIDs("team_user_rel", "team_id", "user_id")
 }
 
-func CreateTeam(name string, user *User) error {
+func CreateTeam(name string, user *User) (*Team, error) {
 	t := Team{Name: name, OwnerID: user.ID}
 	t.SetCreatedBy(user)
 	if err := db.Create(&t).Error; err != nil {
-		return err
+		return nil, err
 	}
 	_ = t.AddMember(user)
-	return nil
+	return &t, nil
 }
 
 func (t *Team) AddMember(u *User) error {
@@ -73,21 +58,7 @@ func (t *Team) IsTeamMember(uid uint) bool {
 }
 
 func (t *Team) GetTeamProjectsLimit(page, limit int) (*[]Project, int, error) {
-	var total int
-	var projects []Project
-
-	offset := (page - 1) * limit
-
-	if err := db.Where("team_id = ?", t.ID).
-		Order("created_at desc").
-		Offset(offset).
-		Limit(limit).
-		Find(&projects).Error; err != nil {
-		log.Fatalln(err)
-		return nil, total, err
-	}
-
-	db.Model(&Project{}).Where("team_id = ?", t.ID).Count(&total)
-
-	return &projects, total, nil
+	projects := make([]Project, limit)
+	total, err := GetObjectsByFieldLimit(&projects, &Project{}, page, limit, "created_at desc", "team_id", t.ID)
+	return &projects, total, err
 }

@@ -64,10 +64,10 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.CreateUser(userCreate.Nickname, userCreate.Email, userCreate.Pwd1); err != nil {
+	if user, err := models.CreateUser(userCreate.Nickname, userCreate.Email, userCreate.Pwd1); err != nil {
 		helpers.Response500(w)
 	} else {
-		helpers.Response201(w, "", nil)
+		helpers.Response201(w, "", serializers.SerializeUser(user))
 	}
 
 }

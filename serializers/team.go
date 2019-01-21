@@ -8,10 +8,10 @@ type TeamSerializer struct {
 }
 
 func SerializeTeam(t *models.Team) TeamSerializer {
-	us := TeamSerializer{
+	ts := TeamSerializer{
 		Name: t.Name,
 	}
 
-	us.serializeBaseField(t.Slug, t.CreatedAt, t.UpdatedAt)
-	return us
+	ts.serializeBaseField(t.Slug, t.CreatedAt, t.UpdatedAt)
+	return ts
 }

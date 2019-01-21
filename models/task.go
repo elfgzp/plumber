@@ -6,13 +6,13 @@ type Task struct {
 	Model
 	Name      string
 	Desc      string
-	Sequence  int
+	Sequence  int `gorm:"AUTO_INCREMENT"`
 	Deadline  *time.Time
 	Doing     bool
 	Completed bool
 
-	TaskState   TaskState
-	TaskStateID uint
+	TaskList   TaskList
+	TaskListID uint
 
 	TaskCheckPoint []TaskCheckPoint
 	TaskComments   []TaskComment

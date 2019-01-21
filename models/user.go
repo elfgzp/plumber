@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/elfgzp/plumber/helpers"
-	"log"
 )
 
 type User struct {
@@ -60,17 +59,17 @@ func GetUserBySlug(slug string) (*User, error) {
 	return &user, err
 }
 
-func CreateUser(nickname, email, password string) error {
+func CreateUser(nickname, email, password string) (*User, error) {
 	user := User{Nickname: nickname, Email: email}
 	user.SetPassword(password)
 
 	err := db.Create(&user).Error
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return &user, nil
 }
 
 func (u *User) SetPassword(password string) {
@@ -82,21 +81,7 @@ func (u *User) JoinedTeamIDs() []uint {
 }
 
 func (u *User) GetJoinedTeamLimit(page, limit int) (*[]Team, int, error) {
-	var total int
-	var teams []Team
-
-	offset := (page - 1) * limit
-
-	ids := u.JoinedTeamIDs()
-	if err := db.Where("id in (?)", ids).
-		Order("created_at asc").
-		Offset(offset).
-		Limit(limit).
-		Find(&teams).Error; err != nil {
-		log.Fatalln(err)
-		return nil, total, err
-	}
-
-	db.Model(&Team{}).Where("id in (?)", ids).Count(&total)
-	return &teams, total, nil
+	teams := make([]Team, limit)
+	total, err := GetObjectsByFieldLimit(&teams, &Team{}, page, limit, "created_at asc", "id", u.JoinedTeamIDs())
+	return &teams, total, err
 }

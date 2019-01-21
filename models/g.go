@@ -5,7 +5,6 @@ import (
 	"github.com/elfgzp/plumber/database"
 	"github.com/jinzhu/gorm"
 	"github.com/rs/xid"
-	"log"
 )
 
 var db *gorm.DB
@@ -36,7 +35,7 @@ func (baseModel *BaseModel) Many2ManyIDs(relTableName, IDField, targetIDField st
 		Select(fmt.Sprintf("%s, %s", IDField, targetIDField)).Rows()
 
 	if err != nil {
-		log.Fatalln("%s %s %s get many2many ids error:", relTableName, IDField, targetIDField, err)
+		fmt.Println("%s %s %s get many2many ids error:", relTableName, IDField, targetIDField, err)
 	}
 
 	defer rows.Close()
@@ -49,10 +48,44 @@ func (baseModel *BaseModel) Many2ManyIDs(relTableName, IDField, targetIDField st
 	return ids
 }
 
+func GetObjectsByFieldLimit(objs interface{}, model interface{}, page, limit int, order, field string, value interface{}) (int, error) {
+	var total int
+
+	if order == "" {
+		order = "id asc"
+	}
+
+	offset := (page - 1) * limit
+
+	if err := db.Where(fmt.Sprintf("%s = ?", field), value).
+		Order(order).
+		Offset(offset).
+		Limit(limit).
+		Find(objs).Error; err != nil {
+		fmt.Println(err)
+		return total, err
+	}
+
+	db.Model(model).Where(fmt.Sprintf("%s = ?", field), value).Count(&total)
+
+	return total, nil
+}
+
 func GetObjectByField(out interface{}, field, value string) error {
 	if err := db.Where(fmt.Sprintf("%s = ?", field), value).
 		Find(out).Error; err != nil {
-		log.Fatalln(err)
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}
+
+func UpdateObject(obj interface{}, contents map[string]interface{}) error {
+	return db.Model(obj).Updates(contents).Error
+}
+
+func FakedDestroyObject(obj interface{}) error {
+	if err := db.Delete(obj).Error; err != nil {
 		return err
 	}
 	return nil

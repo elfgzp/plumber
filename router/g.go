@@ -31,19 +31,27 @@ func init() {
 		helpers.Response200(w, "", apiURL)
 	}, nil)
 
-	register("tokenURL", http.MethodPost, "/api/token", restful.CreateTokenHandler, nil)
-	register("tokenVerificationURL", http.MethodPost, "/api/token/verification", restful.TokenVerifyHandler, nil)
+	register("token", http.MethodPost, "/api/token", restful.CreateTokenHandler, nil)
+	register("tokenVerification", http.MethodPost, "/api/token/verification", restful.TokenVerifyHandler, nil)
 
-	register("currentUserUrl", http.MethodGet, "/api/users/current", restful.GetCurrentUser, middleware.JWTTokenAuthMiddleware)
-	register("usersURL", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
+	register("currentUser", http.MethodGet, "/api/users/current", restful.GetCurrentUser, middleware.JWTTokenAuthMiddleware)
+	register("users", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
 
-	register("userTeamsURL", http.MethodPost, "/api/users/{userSlug}/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
-	register("userTeamsURL", http.MethodGet, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
-	register("teamURL", http.MethodGet, "/api/teams/{teamSlug}", restful.RetrieveTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("userTeams", http.MethodPost, "/api/users/{userSlug}/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("userTeams", http.MethodGet, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("team", http.MethodGet, "/api/teams/{teamSlug}", restful.RetrieveTeamHandler, middleware.JWTTokenAuthMiddleware)
 
-	register("teamProjectsURL", http.MethodPost, "/api/teams/{teamSlug}/projects", restful.CreateProjectHandler, middleware.JWTTokenAuthMiddleware)
-	register("teamProjectsURL", http.MethodGet, "/api/teams/{teamSlug}/projects", restful.ListProjectHandler, middleware.JWTTokenAuthMiddleware)
-	register("ProjectURL", http.MethodGet, "/api/projects/{projectSlug}", restful.RetrieveProjectHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamProjects", http.MethodPost, "/api/teams/{teamSlug}/projects", restful.CreateProjectHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamProjects", http.MethodGet, "/api/teams/{teamSlug}/projects", restful.ListProjectHandler, middleware.JWTTokenAuthMiddleware)
+	register("project", http.MethodGet, "/api/projects/{projectSlug}", restful.RetrieveProjectHandler, middleware.JWTTokenAuthMiddleware)
+
+	register("projectTaskLists", http.MethodPost, "/api/projects/{projectSlug}/task-lists", restful.CreateTaskListHandler, middleware.JWTTokenAuthMiddleware)
+	register("projectTaskLists", http.MethodGet, "/api/projects/{projectSlug}/task-lists", restful.ListTaskListHandler, middleware.JWTTokenAuthMiddleware)
+	register("projectTaskList", http.MethodGet, "/api/projects/{projectSlug}/task-lists/{taskSlug}", restful.RetrieveTaskListHandler, middleware.JWTTokenAuthMiddleware)
+	register("projectTaskList", http.MethodPut, "/api/projects/{projectSlug}/task-lists/{taskSlug}", restful.UpdateTaskListHandler, middleware.JWTTokenAuthMiddleware)
+
+	register("projectTaskList", http.MethodDelete, "/api/projects/{projectSlug}/task-lists/{taskSlug}", restful.DestroyTaskListHandler, middleware.JWTTokenAuthMiddleware)
+
 }
 
 func NewRouter() *mux.Router {
