@@ -7,7 +7,7 @@ type TaskList struct {
 	Tasks    []Task
 
 	Project   Project
-	ProjectID uint
+	ProjectID uint `gorm:"not null;"`
 
 	Active bool
 }
@@ -37,4 +37,10 @@ func CreateTaskList(name string, projectID uint, user *User) (*TaskList, error) 
 		return nil, err
 	}
 	return &t, nil
+}
+
+func (tl *TaskList) GetTasksLimit(page, limit int) (*[]Task, int, error) {
+	var tasks []Task
+	total, err := GetObjectsByFieldLimit(&tasks, &Task{}, page, limit, "sequence asc, created_at desc", "task_list_id", tl.ID)
+	return &tasks, total, err
 }

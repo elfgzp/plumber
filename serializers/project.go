@@ -10,6 +10,6 @@ type ProjectSerializer struct {
 
 func SerializeProject(p *models.Project) ProjectSerializer {
 	ps := ProjectSerializer{Name: p.Name, Desc: p.Desc}
-	ps.serializeBaseField(p.Slug, p.CreatedAt, p.UpdatedAt)
+	ps.serializeBaseField(p.Slug, p.CreatedAt, p.UpdatedAt, p)
 	return ps
 }

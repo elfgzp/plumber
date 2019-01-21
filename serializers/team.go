@@ -12,6 +12,6 @@ func SerializeTeam(t *models.Team) TeamSerializer {
 		Name: t.Name,
 	}
 
-	ts.serializeBaseField(t.Slug, t.CreatedAt, t.UpdatedAt)
+	ts.serializeBaseField(t.Slug, t.CreatedAt, t.UpdatedAt, t)
 	return ts
 }

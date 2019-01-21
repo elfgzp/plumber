@@ -78,18 +78,25 @@ func GetObjectByField(out interface{}, field, value string) error {
 	return nil
 }
 
-func UpdateObject(obj interface{}, contents map[string]interface{}) error {
+func UpdateObject(obj interface{}, contents map[string]interface{}, user *User) error {
+	contents["updated_by_id"] = user.ID
 	if err := db.Model(obj).Updates(contents).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func FakedDestroyObject(obj interface{}) error {
+func FakedDestroyObject(obj interface{}, user *User) error {
+	contents := map[string]interface{}{"deleted_by_id": user.ID}
+	_ = db.Model(obj).Updates(contents).Error
 	if err := db.Delete(obj).Error; err != nil {
 		return err
 	}
 	return nil
+}
+
+func LoadRelatedObject(obj interface{}, relatedObj interface{}, Field string) *gorm.DB {
+	return db.Model(obj).Related(relatedObj, Field)
 }
 
 type Model struct {
@@ -115,4 +122,19 @@ func (m *Model) SetUpdatedBy(u *User) {
 
 func (m *Model) SetDeletedBy(u *User) {
 	m.DeletedByID = u.ID
+}
+
+func (m *Model) RelatedBaseField() {
+	db.Model(&m).
+		Related(&m.CreatedBy, "CreatedBy").
+		Related(&m.UpdatedBy, "UpdatedBy").
+		Related(&m.DeletedBy, "DeletedBy")
+}
+
+func (m *Model) CreatedBySlug() string {
+	return m.CreatedBy.Slug
+}
+
+func (m *Model) UpdatedBySlug() string {
+	return m.UpdatedBy.Slug
 }

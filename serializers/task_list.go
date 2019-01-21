@@ -14,6 +14,6 @@ func SerializeTaskList(tl *models.TaskList) TaskListSerializer {
 		Sequence: tl.Sequence,
 	}
 
-	tls.serializeBaseField(tl.Slug, tl.CreatedAt, tl.UpdatedAt)
+	tls.serializeBaseField(tl.Slug, tl.CreatedAt, tl.UpdatedAt, tl)
 	return tls
 }

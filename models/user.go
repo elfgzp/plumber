@@ -8,6 +8,7 @@ type User struct {
 	BaseModel
 	Nickname          string `gorm:"not null"`
 	Email             string `gorm:"not null;unique_index"`
+	Avatar            string `gorm:"type:varchar(200)"`
 	MobileCountryCode string
 	Mobile            string    `json:"mobile"`
 	PasswordHash      string    `gorm:"not null"`

@@ -106,7 +106,7 @@ func RetrieveTaskListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskList, err := models.GetTaskListBySlug(params["taskSlug"])
+	taskList, err := models.GetTaskListBySlug(params["taskListSlug"])
 	if err != nil {
 		helpers.Response500(w)
 		return
@@ -166,7 +166,7 @@ func UpdateTaskListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskList, err := models.GetTaskListBySlug(params["taskSlug"])
+	taskList, err := models.GetTaskListBySlug(params["taskListSlug"])
 	if err != nil {
 		helpers.Response500(w)
 		return
@@ -188,7 +188,7 @@ func UpdateTaskListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.UpdateObject(taskList, contents); err != nil {
+	if err := models.UpdateObject(taskList, contents, ru); err != nil {
 		helpers.Response500(w)
 	} else {
 		helpers.Response200(w, "", serializers.SerializeTaskList(taskList))
@@ -211,7 +211,7 @@ func DestroyTaskListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskList, err := models.GetTaskListBySlug(params["taskSlug"])
+	taskList, err := models.GetTaskListBySlug(params["taskListSlug"])
 	if err != nil {
 		helpers.Response500(w)
 		return
@@ -222,7 +222,7 @@ func DestroyTaskListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := models.FakedDestroyObject(&taskList); err != nil {
+	if err := models.FakedDestroyObject(&taskList, ru); err != nil {
 		helpers.Response500(w)
 	} else {
 		helpers.Response204(w)

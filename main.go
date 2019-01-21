@@ -15,6 +15,7 @@ func main() {
 	db := database.ConnectToDB()
 	defer db.Close()
 	models.SetDB(db)
+	//db.LogMode(true)
 
 	r := router.NewRouter()
 

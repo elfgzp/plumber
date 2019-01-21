@@ -34,7 +34,7 @@ func Response201(w http.ResponseWriter, msg string, data interface{}) {
 }
 
 func Response204(w http.ResponseWriter) {
-	ResponseWithJSON(w, http.StatusCreated, NoContentResponse())
+	ResponseWithJSON(w, http.StatusNoContent, NoContentResponse())
 }
 
 func Response500(w http.ResponseWriter) {

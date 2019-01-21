@@ -75,6 +75,6 @@ func (p *Project) AddTask(t *Task) error {
 
 func (p *Project) GetTaskListsLimit(page, limit int) (*[]TaskList, int, error) {
 	taskLists := make([]TaskList, limit)
-	total, err := GetObjectsByFieldLimit(&taskLists, &TaskList{}, page, limit, "sequence asc, updated_at desc", "project_id", p.ID)
+	total, err := GetObjectsByFieldLimit(&taskLists, &TaskList{}, page, limit, "sequence asc, created_at desc", "project_id", p.ID)
 	return &taskLists, total, err
 }

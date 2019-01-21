@@ -39,19 +39,23 @@ func init() {
 
 	register("userTeams", http.MethodPost, "/api/users/{userSlug}/teams", restful.CreateTeamHandler, middleware.JWTTokenAuthMiddleware)
 	register("userTeams", http.MethodGet, "/api/users/{userSlug}/teams", restful.ListTeamHandler, middleware.JWTTokenAuthMiddleware)
-	register("team", http.MethodGet, "/api/teams/{teamSlug}", restful.RetrieveTeamHandler, middleware.JWTTokenAuthMiddleware)
+	register("userTeam", http.MethodGet, "/api/teams/{teamSlug}", restful.RetrieveTeamHandler, middleware.JWTTokenAuthMiddleware)
 
 	register("teamProjects", http.MethodPost, "/api/teams/{teamSlug}/projects", restful.CreateProjectHandler, middleware.JWTTokenAuthMiddleware)
 	register("teamProjects", http.MethodGet, "/api/teams/{teamSlug}/projects", restful.ListProjectHandler, middleware.JWTTokenAuthMiddleware)
-	register("project", http.MethodGet, "/api/projects/{projectSlug}", restful.RetrieveProjectHandler, middleware.JWTTokenAuthMiddleware)
+	register("teamProject", http.MethodGet, "/api/projects/{projectSlug}", restful.RetrieveProjectHandler, middleware.JWTTokenAuthMiddleware)
 
 	register("projectTaskLists", http.MethodPost, "/api/projects/{projectSlug}/task-lists", restful.CreateTaskListHandler, middleware.JWTTokenAuthMiddleware)
 	register("projectTaskLists", http.MethodGet, "/api/projects/{projectSlug}/task-lists", restful.ListTaskListHandler, middleware.JWTTokenAuthMiddleware)
-	register("projectTaskList", http.MethodGet, "/api/projects/{projectSlug}/task-lists/{taskSlug}", restful.RetrieveTaskListHandler, middleware.JWTTokenAuthMiddleware)
-	register("projectTaskList", http.MethodPut, "/api/projects/{projectSlug}/task-lists/{taskSlug}", restful.UpdateTaskListHandler, middleware.JWTTokenAuthMiddleware)
+	register("projectTaskList", http.MethodGet, "/api/projects/{projectSlug}/task-lists/{taskListSlug}", restful.RetrieveTaskListHandler, middleware.JWTTokenAuthMiddleware)
+	register("projectTaskList", http.MethodPut, "/api/projects/{projectSlug}/task-lists/{taskListSlug}", restful.UpdateTaskListHandler, middleware.JWTTokenAuthMiddleware)
+	register("projectTaskList", http.MethodDelete, "/api/projects/{projectSlug}/task-lists/{taskListSlug}", restful.DestroyTaskListHandler, middleware.JWTTokenAuthMiddleware)
 
-	register("projectTaskList", http.MethodDelete, "/api/projects/{projectSlug}/task-lists/{taskSlug}", restful.DestroyTaskListHandler, middleware.JWTTokenAuthMiddleware)
-
+	register("listTasks", http.MethodGet, "/api/task-lists/{taskListSlug}/tasks", restful.ListTaskHandler, middleware.JWTTokenAuthMiddleware)
+	register("listTasks", http.MethodPost, "/api/task-lists/{taskListSlug}/tasks", restful.CreateTaskHandler, middleware.JWTTokenAuthMiddleware)
+	register("listTask", http.MethodGet, "/api/task-lists/{taskListSlug}/tasks/{taskSlug}", restful.RetrieveTaskHandler, middleware.JWTTokenAuthMiddleware)
+	register("listTask", http.MethodPut, "/api/task-lists/{taskListSlug}/tasks/{taskSlug}", restful.UpdateTaskHandler, middleware.JWTTokenAuthMiddleware)
+	register("listTask", http.MethodDelete, "/api/task-lists/{taskListSlug}/tasks/{taskSlug}", restful.DestroyTaskHandler, middleware.JWTTokenAuthMiddleware)
 }
 
 func NewRouter() *mux.Router {
