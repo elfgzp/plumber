@@ -35,7 +35,7 @@ func (baseModel *BaseModel) Many2ManyIDs(relTableName, IDField, targetIDField st
 		Select(fmt.Sprintf("%s, %s", IDField, targetIDField)).Rows()
 
 	if err != nil {
-		fmt.Println("%s %s %s get many2many ids error:", relTableName, IDField, targetIDField, err)
+		return nil
 	}
 
 	defer rows.Close()
@@ -62,7 +62,6 @@ func GetObjectsByFieldLimit(objs interface{}, model interface{}, page, limit int
 		Offset(offset).
 		Limit(limit).
 		Find(objs).Error; err != nil {
-		fmt.Println(err)
 		return total, err
 	}
 
@@ -74,14 +73,16 @@ func GetObjectsByFieldLimit(objs interface{}, model interface{}, page, limit int
 func GetObjectByField(out interface{}, field, value string) error {
 	if err := db.Where(fmt.Sprintf("%s = ?", field), value).
 		Find(out).Error; err != nil {
-		fmt.Println(err)
 		return err
 	}
 	return nil
 }
 
 func UpdateObject(obj interface{}, contents map[string]interface{}) error {
-	return db.Model(obj).Updates(contents).Error
+	if err := db.Model(obj).Updates(contents).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func FakedDestroyObject(obj interface{}) error {
