@@ -68,14 +68,14 @@ type TeamCreate struct {
 	TeamName string `json:"teamName"`
 }
 
-func checkTeamCreate(teamCreate TeamCreate) []FieldCheckError {
-	var errs []FieldCheckError
+func ValidTeamCreate(teamCreate TeamCreate) []FieldValidError {
+	var errs []FieldValidError
 	if teamCreate.TeamName == "" {
-		errs = append(errs, FieldCheckError{"teamName", "Team name required"})
+		errs = append(errs, FieldValidError{"teamName", "Team name required"})
 	}
 
 	if teamNameExist(teamCreate.TeamName) {
-		errs = append(errs, FieldCheckError{"teamName", "Team name existed"})
+		errs = append(errs, FieldValidError{"teamName", "Team name existed"})
 	}
 
 	return errs
@@ -104,7 +104,7 @@ func CreateTeamHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if errs := checkTeamCreate(teamCreate); len(errs) > 0 {
+	if errs := ValidTeamCreate(teamCreate); len(errs) > 0 {
 		helpers.Response400(w, "", errs)
 		return
 	}

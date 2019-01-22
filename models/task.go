@@ -7,7 +7,7 @@ type Task struct {
 	Name      string `gorm:"not null;"`
 	Desc      string
 	Sequence  int `gorm:"AUTO_INCREMENT"`
-	Deadline  time.Time
+	Deadline  *time.Time
 	Doing     bool
 	Completed bool
 
@@ -35,7 +35,7 @@ func GetTaskBySlug(slug string) (*Task, error) {
 	return &t, nil
 }
 
-func CreateTask(name string, deadline time.Time, assignID *uint, taskList *TaskList, user *User) (*Task, error) {
+func CreateTask(name string, deadline *time.Time, assignID *uint, taskList *TaskList, user *User) (*Task, error) {
 	t := Task{
 		Name:       name,
 		AssignID:   assignID,

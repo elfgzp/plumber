@@ -6,21 +6,20 @@ import (
 	"github.com/elfgzp/plumber/models"
 	"github.com/elfgzp/plumber/serializers"
 	"net/http"
-	"strconv"
 )
 
 type TaskListCreate struct {
 	Name string `json:"name"`
 }
 
-func CheckTaskListCreate(taskListCreate TaskListCreate) []FieldCheckError {
-	var errs []FieldCheckError
+func ValidTaskListCreate(taskListCreate TaskListCreate) []FieldValidError {
+	var errs []FieldValidError
 	if taskListCreate.Name == "" {
-		errs = append(errs, FieldCheckError{Field: "name", Error: "Task list name required."})
+		errs = append(errs, FieldValidError{Field: "name", Error: "Task list name required."})
 	}
 
 	if taskListNameExsit(taskListCreate.Name) {
-		errs = append(errs, FieldCheckError{Field: "name", Error: "Task list name existed."})
+		errs = append(errs, FieldValidError{Field: "name", Error: "Task list name existed."})
 	}
 	return errs
 }
@@ -47,7 +46,7 @@ func CreateTaskListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if errs := CheckTaskListCreate(taskListCreate); len(errs) > 0 {
+	if errs := ValidTaskListCreate(taskListCreate); len(errs) > 0 {
 		helpers.Response400(w, "", errs)
 		return
 	}
@@ -122,29 +121,22 @@ func RetrieveTaskListHandler(w http.ResponseWriter, r *http.Request) {
 
 type TaskListUpdate struct {
 	Name     string `json:"name"`
-	Sequence string `json:"sequence"`
+	Sequence *int   `json:"sequence"`
 }
 
-func CheckTaskListUpdate(taskListUpdate TaskListUpdate, taskList *models.TaskList) (map[string]interface{}, []FieldCheckError) {
-	var errs []FieldCheckError
+func ValidTaskListUpdate(taskListUpdate TaskListUpdate, taskList *models.TaskList) (map[string]interface{}, []FieldValidError) {
+	var errs []FieldValidError
 	contents := map[string]interface{}{}
 	if taskListUpdate.Name != "" && taskListUpdate.Name != taskList.Name {
 		if taskListNameExsit(taskListUpdate.Name) {
-			errs = append(errs, FieldCheckError{Field: "name", Error: "Task list name existed."})
+			errs = append(errs, FieldValidError{Field: "name", Error: "Task list name existed."})
 		} else {
 			contents["name"] = taskListUpdate.Name
 		}
 	}
 
-	if taskListUpdate.Sequence != "" {
-		if sequence, err := strconv.Atoi(taskListUpdate.Sequence); err == nil {
-			if sequence != taskList.Sequence {
-				contents["sequence"] = sequence
-			}
-		} else {
-			errs = append(errs, FieldCheckError{Field: "sequence", Error: "Sequence must be a number."})
-		}
-
+	if taskListUpdate.Sequence != nil {
+		contents["sequence"] = *taskListUpdate.Sequence
 	}
 
 	return contents, errs
@@ -182,7 +174,7 @@ func UpdateTaskListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contents, errs := CheckTaskListUpdate(taskListUpdate, taskList)
+	contents, errs := ValidTaskListUpdate(taskListUpdate, taskList)
 	if len(errs) > 0 {
 		helpers.Response400(w, "", errs)
 		return

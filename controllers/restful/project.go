@@ -13,15 +13,15 @@ type ProjectCreate struct {
 	Desc string `json:"desc"`
 }
 
-func checkProjectCreate(projectCreate ProjectCreate) []FieldCheckError {
-	var errs []FieldCheckError
+func ValidProjectCreate(projectCreate ProjectCreate) []FieldValidError {
+	var errs []FieldValidError
 
 	if projectCreate.Name == "" {
-		errs = append(errs, FieldCheckError{Field: "name", Error: "Project name required."})
+		errs = append(errs, FieldValidError{Field: "name", Error: "Project name required."})
 	}
 
 	if projectNameExist(projectCreate.Name) {
-		errs = append(errs, FieldCheckError{Field: "name", Error: "Project name existed."})
+		errs = append(errs, FieldValidError{Field: "name", Error: "Project name existed."})
 
 	}
 
@@ -49,7 +49,7 @@ func CreateProjectHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if errs := checkProjectCreate(projectCreate); len(errs) > 0 {
+	if errs := ValidProjectCreate(projectCreate); len(errs) > 0 {
 		helpers.Response400(w, "", errs)
 		return
 	}

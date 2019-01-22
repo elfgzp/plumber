@@ -30,7 +30,11 @@ func main() {
 
 	_, _ = models.CreateTaskList("需求", p1.ID, u1)
 	_, _ = models.CreateTaskList("设计", p1.ID, u1)
-	_, _ = models.CreateTaskList("开发", p1.ID, u1)
+	tl1, _ := models.CreateTaskList("开发", p1.ID, u1)
 	_, _ = models.CreateTaskList("测试", p1.ID, u1)
 	_, _ = models.CreateTaskList("上线", p1.ID, u1)
+
+	_, _ = models.CreateTask("登陆页面开发", nil, nil, tl1, u1)
+	_, _ = models.CreateTask("注册页面开发", nil, nil, tl1, u1)
+	_, _ = models.CreateTask("任务列表页面开发", nil, nil, tl1, u1)
 }

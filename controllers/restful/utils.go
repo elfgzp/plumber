@@ -9,9 +9,10 @@ import (
 	"net/url"
 	"regexp"
 	"strconv"
+	"time"
 )
 
-type FieldCheckError struct {
+type FieldValidError struct {
 	Field string `json:"field"`
 	Error string `json:"error"`
 }
@@ -58,7 +59,7 @@ func getPageLimitQuery(query url.Values) (int, int) {
 }
 
 // Check functions
-func checkLen(fieldName, fieldValue string, minLen, maxLen int) string {
+func ValidLen(fieldName, fieldValue string, minLen, maxLen int) string {
 	lenField := len(fieldValue)
 
 	if lenField < minLen {
@@ -72,18 +73,18 @@ func checkLen(fieldName, fieldValue string, minLen, maxLen int) string {
 	return ""
 }
 
-func checkPassword(password string) string {
-	return checkLen("Password", password, 6, 50)
+func ValidPassword(password string) string {
+	return ValidLen("Password", password, 6, 50)
 }
 
-func checkPwdRepeatMatch(pwd1, pwd2 string) string {
+func ValidPwdRepeatMatch(pwd1, pwd2 string) string {
 	if pwd1 != pwd2 {
 		return fmt.Sprintf("2 password does not match.")
 	}
 	return ""
 }
 
-func checkEmail(email string) string {
+func ValidEmail(email string) string {
 	if len(email) == 0 {
 		return fmt.Sprintf("Email field is required.")
 	}
@@ -116,4 +117,52 @@ func taskListNameExsit(name string) bool {
 	taskList, _ := models.GetTaskListByName(name)
 
 	return taskList != nil
+}
+
+func validIntField(contents map[string]interface{}, data map[string]interface{}, field string, errs []FieldValidError) (map[string]interface{}, []FieldValidError) {
+	if val, ok := data[field]; ok && val != nil {
+		if _, ok = val.(float64); !ok {
+			errs = append(errs, FieldValidError{Field: field, Error: "Must be a number."})
+		} else {
+			contents[field] = int(val.(float64))
+		}
+	}
+	return contents, errs
+}
+
+func validStringField(contents map[string]interface{}, data map[string]interface{}, field string, errs []FieldValidError) (map[string]interface{}, []FieldValidError) {
+	if val, ok := data[field]; ok && val != nil {
+		if _, ok = val.(string); !ok {
+			errs = append(errs, FieldValidError{Field: field, Error: "Must be a string."})
+		} else {
+			contents[field] = val.(string)
+		}
+	}
+	return contents, errs
+}
+
+func validDatetimeField(contents map[string]interface{}, data map[string]interface{}, field string, errs []FieldValidError) (map[string]interface{}, []FieldValidError) {
+	if val, ok := data[field]; ok {
+		if val == nil {
+			contents[field] = nil
+		} else if _, ok := val.(string); !ok {
+			errs = append(errs, FieldValidError{Field: field, Error: "Must be a datetime (RFC3339Nano)."})
+		} else if t, err := time.Parse(time.RFC3339Nano, val.(string)); err != nil {
+			errs = append(errs, FieldValidError{Field: field, Error: "Must be a datetime (RFC3339Nano)."})
+		} else {
+			contents[field] = t
+		}
+	}
+	return contents, errs
+}
+
+func validBoolField(contents map[string]interface{}, data map[string]interface{}, field string, errs []FieldValidError) (map[string]interface{}, []FieldValidError) {
+	if val, ok := data[field]; ok && val != nil {
+		if _, ok = val.(bool); !ok {
+			errs = append(errs, FieldValidError{Field: field, Error: "Must be a bool."})
+		} else {
+			contents[field] = val.(bool)
+		}
+	}
+	return contents, errs
 }
