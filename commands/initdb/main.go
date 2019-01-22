@@ -24,7 +24,7 @@ func main() {
 		&models.Task{},
 		&models.TaskList{},
 		&models.TaskComment{},
-		&models.TaskCheckPoint{},
+		&models.TaskCheckpoint{},
 		"plumber_team_user_rel",
 		"plumber_stared_task_user_rel",
 		"plumber_project_user_rel",
@@ -37,6 +37,6 @@ func main() {
 		&models.Task{},
 		&models.TaskList{},
 		&models.TaskComment{},
-		&models.TaskCheckPoint{},
+		&models.TaskCheckpoint{},
 	)
 }

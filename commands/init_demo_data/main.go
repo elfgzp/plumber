@@ -36,5 +36,9 @@ func main() {
 
 	_, _ = models.CreateTask("登陆页面开发", nil, nil, tl1, u1)
 	_, _ = models.CreateTask("注册页面开发", nil, nil, tl1, u1)
-	_, _ = models.CreateTask("任务列表页面开发", nil, nil, tl1, u1)
+	task1, _ := models.CreateTask("任务列表页面开发", nil, nil, tl1, u1)
+
+	_, _ = models.CreateTaskCheckpoint("检查项组件开发", nil, nil, task1, u1)
+	_, _ = models.CreateTaskCheckpoint("评论组件开发", nil, nil, task1, u1)
+
 }

@@ -56,6 +56,13 @@ func init() {
 	register("listTask", http.MethodGet, "/api/task-lists/{taskListSlug}/tasks/{taskSlug}", restful.RetrieveTaskHandler, middleware.JWTTokenAuthMiddleware)
 	register("listTask", http.MethodPut, "/api/task-lists/{taskListSlug}/tasks/{taskSlug}", restful.UpdateTaskHandler, middleware.JWTTokenAuthMiddleware)
 	register("listTask", http.MethodDelete, "/api/task-lists/{taskListSlug}/tasks/{taskSlug}", restful.DestroyTaskHandler, middleware.JWTTokenAuthMiddleware)
+
+	register("taskCheckpoints", http.MethodGet, "/api/tasks/{taskSlug}/task-checkpoints", restful.ListTaskCheckpointHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskCheckpoints", http.MethodPost, "/api/tasks/{taskSlug}/task-checkpoints", restful.CreateTaskCheckpointHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskCheckpoint", http.MethodGet, "/api/tasks/{taskSlug}/task-checkpoints/{taskCheckpointSlug}", restful.RetrieveTaskCheckpointHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskCheckpoint", http.MethodPut, "/api/tasks/{taskSlug}/task-checkpoints/{taskCheckpointSlug}", restful.UpdateTaskCheckpointHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskCheckpoint", http.MethodDelete, "/api/tasks/{taskSlug}/task-checkpoints/{taskCheckpointSlug}", restful.DestroyTaskCheckpointHandler, middleware.JWTTokenAuthMiddleware)
+
 }
 
 func NewRouter() *mux.Router {

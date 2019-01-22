@@ -5,6 +5,7 @@ import (
 	"github.com/elfgzp/plumber/database"
 	"github.com/jinzhu/gorm"
 	"github.com/rs/xid"
+	"time"
 )
 
 var db *gorm.DB
@@ -129,6 +130,18 @@ func (m *Model) RelatedBaseField() {
 		Related(&m.CreatedBy, "CreatedBy").
 		Related(&m.UpdatedBy, "UpdatedBy").
 		Related(&m.DeletedBy, "DeletedBy")
+}
+
+func (m *Model) BaseSlug() string {
+	return m.BaseModel.Slug
+}
+
+func (m *Model) CreatedAt() time.Time {
+	return m.BaseModel.CreatedAt
+}
+
+func (m *Model) UpdatedAt() time.Time {
+	return m.BaseModel.UpdatedAt
 }
 
 func (m *Model) CreatedBySlug() string {

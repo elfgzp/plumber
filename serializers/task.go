@@ -44,12 +44,10 @@ type RetrieveTaskSerializer struct {
 
 func SerializeRetrieveListTask(t *models.Task) ListTaskSerializer {
 	models.LoadRelatedObject(&t, &t.Assign, "Assign")
-	models.LoadRelatedObject(&t, &t.TaskList, "TaskList")
-	models.LoadRelatedObject(&t, &t.Project, "Project")
 
 	ts := ListTaskSerializer{}
 	ts.SerializeBaseTask(t.Name, t.Desc, t.Assign.Nickname, t.Assign.Slug, t.Sequence, t.Deadline, t.Doing, t.Completed)
-	ts.serializeBaseField(t.Slug, t.CreatedAt, t.UpdatedAt, t)
+	ts.serializeBaseField(t)
 	return ts
 }
 
@@ -65,6 +63,6 @@ func SerializeRetrieveTask(t *models.Task) RetrieveTaskSerializer {
 		ProjectName:  t.Project.Name,
 	}
 	ts.SerializeBaseTask(t.Name, t.Desc, t.Assign.Nickname, t.Assign.Slug, t.Sequence, t.Deadline, t.Doing, t.Completed)
-	ts.serializeBaseField(t.Slug, t.CreatedAt, t.UpdatedAt, t)
+	ts.serializeBaseField(t)
 	return ts
 }

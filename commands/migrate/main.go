@@ -24,6 +24,6 @@ func main() {
 		&models.Task{},
 		&models.TaskList{},
 		&models.TaskComment{},
-		&models.TaskCheckPoint{},
+		&models.TaskCheckpoint{},
 	)
 }

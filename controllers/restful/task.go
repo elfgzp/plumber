@@ -24,6 +24,7 @@ func ValidTaskCreate(createTask CreateTask, taskList *models.TaskList) (map[stri
 		errs = append(errs, FieldValidError{"name", "Name required."})
 	}
 
+	models.LoadRelatedObject(&taskList, &taskList.Project, "Project")
 	if createTask.AssignedUserSlug != "" {
 		if assign, _ := models.GetUserBySlug(createTask.AssignedUserSlug); assign == nil {
 			errs = append(errs, FieldValidError{"assigned_user_slug", "Assigned user not Found."})
@@ -98,6 +99,7 @@ func ValidUpdateTask(data map[string]interface{}, task *models.Task) (map[string
 	contents, errs = validIntField(contents, data, "sequence", errs)
 	contents, errs = validDatetimeField(contents, data, "deadline", errs)
 
+	models.LoadRelatedObject(&task, &task.Project, "Project")
 	if assignedUserSlug, ok := data["assigned_user_slug"]; ok {
 		if assignedUserSlug == nil {
 			contents["assign_id"] = nil
@@ -107,7 +109,7 @@ func ValidUpdateTask(data map[string]interface{}, task *models.Task) (map[string
 			} else if !task.Project.IsProjectMember(assign.ID) {
 				errs = append(errs, FieldValidError{"assigned_user_slug", "Assigned user is not project member."})
 			} else {
-				contents["assign_id"] = assign.Slug
+				contents["assign_id"] = assign.ID
 			}
 		} else {
 			errs = append(errs, FieldValidError{Field: "assigned_user_slug", Error: "Must be a string."})
@@ -153,9 +155,9 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := ioutil.ReadAll(r.Body)
+	body, _ := ioutil.ReadAll(r.Body)
 	if err := json.Unmarshal(body, &data); err != nil {
-		helpers.Response400(w, "Body Invalid.", nil)
+		helpers.Response400(w, "JSON invalid.", nil)
 		return
 	}
 
@@ -233,7 +235,7 @@ func RetrieveTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if task == nil {
-		helpers.Response404(w, "Task list not found.")
+		helpers.Response404(w, "Task not found.")
 		return
 	}
 

@@ -14,7 +14,7 @@ type Task struct {
 	TaskList   TaskList
 	TaskListID uint
 
-	TaskCheckPoint []TaskCheckPoint
+	TaskCheckpoint []TaskCheckpoint
 	TaskComments   []TaskComment
 
 	Assign   User
@@ -48,4 +48,10 @@ func CreateTask(name string, deadline *time.Time, assignID *uint, taskList *Task
 		return nil, err
 	}
 	return &t, nil
+}
+
+func (tl *Task) GetTaskCheckpointsLimit(page, limit int) (*[]TaskCheckpoint, int, error) {
+	var taskCPs []TaskCheckpoint
+	total, err := GetObjectsByFieldLimit(&taskCPs, &TaskCheckpoint{}, page, limit, "sequence asc, created_at desc", "task_id", tl.ID)
+	return &taskCPs, total, err
 }
