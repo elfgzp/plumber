@@ -50,8 +50,14 @@ func CreateTask(name string, deadline *time.Time, assignID *uint, taskList *Task
 	return &t, nil
 }
 
-func (tl *Task) GetTaskCheckpointsLimit(page, limit int) (*[]TaskCheckpoint, int, error) {
+func (t *Task) GetTaskCheckpointsLimit(page, limit int) (*[]TaskCheckpoint, int, error) {
 	var taskCPs []TaskCheckpoint
-	total, err := GetObjectsByFieldLimit(&taskCPs, &TaskCheckpoint{}, page, limit, "sequence asc, created_at desc", "task_id", tl.ID)
+	total, err := GetObjectsByFieldLimit(&taskCPs, &TaskCheckpoint{}, page, limit, "sequence asc, created_at desc", "task_id", t.ID)
 	return &taskCPs, total, err
+}
+
+func (t *Task) GetTaskCommentsLimit(page, limit int) (*[]TaskComment, int, error) {
+	var taskComments []TaskComment
+	total, err := GetObjectsByFieldLimit(&taskComments, &TaskComment{}, page, limit, "created_at asc", "task_id", t.ID)
+	return &taskComments, total, err
 }

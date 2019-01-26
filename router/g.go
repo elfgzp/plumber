@@ -63,6 +63,12 @@ func init() {
 	register("taskCheckpoint", http.MethodPut, "/api/tasks/{taskSlug}/task-checkpoints/{taskCheckpointSlug}", restful.UpdateTaskCheckpointHandler, middleware.JWTTokenAuthMiddleware)
 	register("taskCheckpoint", http.MethodDelete, "/api/tasks/{taskSlug}/task-checkpoints/{taskCheckpointSlug}", restful.DestroyTaskCheckpointHandler, middleware.JWTTokenAuthMiddleware)
 
+	register("taskComments", http.MethodGet, "/api/tasks/{taskSlug}/task-comments", restful.ListTaskCommentHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskComments", http.MethodPost, "/api/tasks/{taskSlug}/task-comments", restful.CreateTaskCommentHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskComments", http.MethodGet, "/api/tasks/{taskSlug}/task-comments/{taskCommentSlug}", restful.RetrieveTaskCommentHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskComments", http.MethodPut, "/api/tasks/{taskSlug}/task-comments/{taskCommentSlug}", restful.UpdateTaskCommentHandler, middleware.JWTTokenAuthMiddleware)
+	register("taskComments", http.MethodDelete, "/api/tasks/{taskSlug}/task-comments/{taskCommentSlug}", restful.DestroyTaskCommentHandler, middleware.JWTTokenAuthMiddleware)
+
 }
 
 func NewRouter() *mux.Router {

@@ -15,16 +15,16 @@ type ModelSerializer struct {
 type BaseModelInterface interface {
 	RelatedBaseField()
 	BaseSlug() string
-	CreatedAt() time.Time
-	UpdatedAt() time.Time
+	BaseCreatedAt() time.Time
+	BaseUpdatedAt() time.Time
 	CreatedBySlug() string
 	UpdatedBySlug() string
 }
 
 func (ms *ModelSerializer) serializeBaseField(baseModel BaseModelInterface) {
 	ms.Slug = baseModel.BaseSlug()
-	ms.CreatedAt = baseModel.CreatedAt()
-	ms.UpdatedAt = baseModel.UpdatedAt()
+	ms.CreatedAt = baseModel.BaseCreatedAt()
+	ms.UpdatedAt = baseModel.BaseUpdatedAt()
 	baseModel.RelatedBaseField()
 
 	ms.CreatedBySlug = baseModel.CreatedBySlug()

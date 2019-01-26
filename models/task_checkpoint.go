@@ -14,7 +14,7 @@ type TaskCheckpoint struct {
 	Deadline *time.Time
 
 	Task   Task
-	TaskID uint
+	TaskID uint `gorm:"not null;"`
 }
 
 func GetTaskCheckpointBySlug(slug string) (*TaskCheckpoint, error) {

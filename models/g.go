@@ -136,11 +136,11 @@ func (m *Model) BaseSlug() string {
 	return m.BaseModel.Slug
 }
 
-func (m *Model) CreatedAt() time.Time {
+func (m *Model) BaseCreatedAt() time.Time {
 	return m.BaseModel.CreatedAt
 }
 
-func (m *Model) UpdatedAt() time.Time {
+func (m *Model) BaseUpdatedAt() time.Time {
 	return m.BaseModel.UpdatedAt
 }
 
