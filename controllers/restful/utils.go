@@ -131,12 +131,17 @@ func validIntField(contents map[string]interface{}, data map[string]interface{},
 }
 
 func validStringField(contents map[string]interface{}, data map[string]interface{}, field string, errs []FieldValidError) (map[string]interface{}, []FieldValidError) {
-	if val, ok := data[field]; ok && val != nil {
-		if _, ok = val.(string); !ok {
-			errs = append(errs, FieldValidError{Field: field, Error: "Must be a string."})
+	if val, ok := data[field]; ok {
+		if val != nil {
+			if _, ok = val.(string); !ok {
+				errs = append(errs, FieldValidError{Field: field, Error: "Must be a string."})
+			} else {
+				contents[field] = val.(string)
+			}
 		} else {
-			contents[field] = val.(string)
+			contents[field] = nil
 		}
+
 	}
 	return contents, errs
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/elfgzp/plumber/helpers"
 	"github.com/elfgzp/plumber/models"
 	"github.com/elfgzp/plumber/serializers"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -56,8 +57,66 @@ func CreateTaskCommentHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UpdateTaskCommentHandler(w http.ResponseWriter, r *http.Request) {
+func validUpdateTaskComment(data map[string]interface{}) (map[string]interface{}, []FieldValidError) {
+	var errs []FieldValidError
+	contents := map[string]interface{}{}
 
+	contents, errs = validStringField(contents, data, "content", errs)
+	if content, ok := contents["content"]; ok {
+		if content == "" || content == nil {
+			errs = append(errs)
+		}
+	}
+	return contents, errs
+}
+
+func UpdateTaskCommentHandler(w http.ResponseWriter, r *http.Request) {
+	var data map[string]interface{}
+
+	ru := getRequestUser(r)
+	params := getRouteParams(r)
+
+	task, _ := models.GetTaskBySlug(params["taskSlug"])
+	if task == nil {
+		helpers.Response404(w, "Task not found.")
+		return
+	}
+
+	models.LoadRelatedObject(&task, &task.Project, "Project")
+	if !task.Project.IsProjectMember(ru.ID) {
+		helpers.Response403(w)
+		return
+	}
+
+	taskComment, _ := models.GetTaskCommentBySlug(params["taskCommentSlug"])
+
+	if taskComment == nil {
+		helpers.Response404(w, "Task comment not found.")
+		return
+	}
+	models.LoadRelatedObject(&task, &task.Project, "Project")
+	if !task.Project.IsProjectMember(ru.ID) {
+		helpers.Response403(w)
+		return
+	}
+
+	body, _ := ioutil.ReadAll(r.Body)
+	if err := json.Unmarshal(body, &data); err != nil {
+		helpers.Response400(w, "JSON invalid.", nil)
+		return
+	}
+
+	contents, errs := validUpdateTaskComment(data)
+	if len(errs) > 0 {
+		helpers.Response400(w, "", errs)
+		return
+	}
+
+	if err := models.UpdateObject(&taskComment, contents, ru); err != nil {
+		helpers.Response500(w)
+	} else {
+		helpers.Response200(w, "", serializers.SerializeTaskComment(taskComment))
+	}
 }
 
 func ListTaskCommentHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,9 +151,61 @@ func ListTaskCommentHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RetrieveTaskCommentHandler(w http.ResponseWriter, r *http.Request) {
+	ru := getRequestUser(r)
+	params := getRouteParams(r)
 
+	task, _ := models.GetTaskBySlug(params["taskSlug"])
+	if task == nil {
+		helpers.Response404(w, "Task not found.")
+		return
+	}
+
+	models.LoadRelatedObject(&task, &task.Project, "Project")
+	if !task.Project.IsProjectMember(ru.ID) {
+		helpers.Response403(w)
+		return
+	}
+
+	taskComment, _ := models.GetTaskCommentBySlug(params["taskCommentSlug"])
+
+	if taskComment == nil {
+		helpers.Response404(w, "Task comment not found.")
+		return
+	}
+
+	helpers.Response200(w, "", serializers.SerializeTaskComment(taskComment))
 }
 
 func DestroyTaskCommentHandler(w http.ResponseWriter, r *http.Request) {
+	ru := getRequestUser(r)
+	params := getRouteParams(r)
 
+	task, _ := models.GetTaskBySlug(params["taskSlug"])
+	if task == nil {
+		helpers.Response404(w, "Task not found.")
+		return
+	}
+
+	models.LoadRelatedObject(&task, &task.Project, "Project")
+	if !task.Project.IsProjectMember(ru.ID) {
+		helpers.Response403(w)
+		return
+	}
+
+	taskComment, err := models.GetTaskCommentBySlug(params["taskCommentSlug"])
+	if err != nil {
+		helpers.Response500(w)
+		return
+	}
+
+	if taskComment == nil {
+		helpers.Response404(w, "Task comment not found.")
+		return
+	}
+
+	if err := models.FakedDestroyObject(&taskComment, ru); err != nil {
+		helpers.Response500(w)
+	} else {
+		helpers.Response204(w)
+	}
 }

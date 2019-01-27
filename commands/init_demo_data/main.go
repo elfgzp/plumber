@@ -41,4 +41,6 @@ func main() {
 	_, _ = models.CreateTaskCheckpoint("检查项组件开发", nil, nil, task1, u1)
 	_, _ = models.CreateTaskCheckpoint("评论组件开发", nil, nil, task1, u1)
 
+	_, _ = models.CreateTaskComment("测试评论", task1.ID, u1)
+
 }

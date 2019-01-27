@@ -90,7 +90,7 @@ func CreateTaskHandler(w http.ResponseWriter, r *http.Request) {
 //	AssignedUserSlug *string    `json:"assigned_user_slug"`
 //}
 
-func ValidUpdateTask(data map[string]interface{}, task *models.Task) (map[string]interface{}, []FieldValidError) {
+func validUpdateTask(data map[string]interface{}, task *models.Task) (map[string]interface{}, []FieldValidError) {
 	var errs []FieldValidError
 	contents := map[string]interface{}{}
 
@@ -166,7 +166,7 @@ func UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
 	//	return
 	//}
 
-	contents, errs := ValidUpdateTask(data, task)
+	contents, errs := validUpdateTask(data, task)
 	if len(errs) > 0 {
 		helpers.Response400(w, "", errs)
 		return

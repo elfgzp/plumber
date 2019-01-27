@@ -80,7 +80,7 @@ func CreateTaskCheckpointHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func ValidUpdateTaskCheckpoint(data map[string]interface{}, task *models.Task) (map[string]interface{}, []FieldValidError) {
+func validUpdateTaskCheckpoint(data map[string]interface{}, task *models.Task) (map[string]interface{}, []FieldValidError) {
 	var errs []FieldValidError
 	contents := map[string]interface{}{}
 
@@ -125,14 +125,10 @@ func UpdateTaskCheckpointHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskCP, err := models.GetTaskCheckpointBySlug(params["taskCheckpointSlug"])
-	if err != nil {
-		helpers.Response500(w)
-		return
-	}
+	taskCP, _ := models.GetTaskCheckpointBySlug(params["taskCheckpointSlug"])
 
 	if taskCP == nil {
-		helpers.Response404(w, "Task Checkpoint not found.")
+		helpers.Response404(w, "Task checkpoint not found.")
 		return
 	}
 	models.LoadRelatedObject(&task, &task.Project, "Project")
@@ -147,7 +143,7 @@ func UpdateTaskCheckpointHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contents, errs := ValidUpdateTaskCheckpoint(data, task)
+	contents, errs := validUpdateTaskCheckpoint(data, task)
 	if len(errs) > 0 {
 		helpers.Response400(w, "", errs)
 		return
@@ -237,11 +233,7 @@ func DestroyTaskCheckpointHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	taskCP, err := models.GetTaskCheckpointBySlug(params["taskCheckpointSlug"])
-	if err != nil {
-		helpers.Response500(w)
-		return
-	}
+	taskCP, _ := models.GetTaskCheckpointBySlug(params["taskCheckpointSlug"])
 
 	if taskCP == nil {
 		helpers.Response404(w, "Task checkpoint not found.")
