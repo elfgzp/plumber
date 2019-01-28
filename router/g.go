@@ -31,8 +31,8 @@ func init() {
 		helpers.Response200(w, "", apiURL)
 	}, nil)
 
-	register("token", http.MethodPost, "/api/token", restful.CreateTokenHandler, nil)
-	register("tokenVerification", http.MethodPost, "/api/token/verification", restful.TokenVerifyHandler, nil)
+	register("token", http.MethodPost, "/api/users/token", restful.CreateTokenHandler, nil)
+	register("tokenVerification", http.MethodPost, "/api/users/token/verification", restful.TokenVerifyHandler, nil)
 
 	register("currentUser", http.MethodGet, "/api/users/current", restful.GetCurrentUser, middleware.JWTTokenAuthMiddleware)
 	register("users", http.MethodPost, "/api/users", restful.CreateUserHandler, nil)
