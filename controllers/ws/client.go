@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"github.com/gorilla/websocket"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -29,6 +30,9 @@ var (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  upgraderRBS,
 	WriteBufferSize: upgraderWBS,
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 type Client struct {
