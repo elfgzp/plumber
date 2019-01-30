@@ -10,7 +10,7 @@ type Backend struct {
 	unregister chan *Client
 }
 
-func newBackend() *Backend {
+func NewBackend() *Backend {
 	return &Backend{
 		clients:    make(map[*Client]bool),
 		broadcast:  make(chan []byte),
@@ -19,7 +19,7 @@ func newBackend() *Backend {
 	}
 }
 
-func (b *Backend) run() {
+func (b *Backend) Run() {
 	for {
 		select {
 		case client := <-b.register:

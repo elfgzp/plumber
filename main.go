@@ -19,10 +19,11 @@ func main() {
 	//db.LogMode(true)
 
 	r := router.NewRouter()
+	r.HandleFunc("/test_ws", ws.TestWSHandler)
+	r.HandleFunc("/ws", ws.WebsocketHandler)
 
 	log.Println("Serve start at http://127.0.0.1:8868")
 
-	http.HandleFunc("/ws", ws.WebsocketHandler)
 	err := http.ListenAndServe(":8868", context.ClearHandler(r))
 	if err != nil {
 		panic(fmt.Errorf("Serve stop with error : %s", err))
